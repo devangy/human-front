@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 // ── SVG Icon primitives ──────────────────────────────────────────────────────
+
 const Icon = ({
     d,
     size = 18,
@@ -29,7 +30,12 @@ const Icon = ({
 );
 
 const Icons = {
-    agents: "M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18",
+    // Nav Icons
+    agents: [
+        "M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z",
+        "M3 14v7h18v-7",
+        "M8 14v4M16 14v4M12 14v4",
+    ],
     knowledge: [
         "M4 19.5A2.5 2.5 0 0 1 6.5 17H20",
         "M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z",
@@ -39,10 +45,23 @@ const Icons = {
         "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z",
         "M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12",
     ],
+    memory: [
+        "M3 9a9 3 0 0 1 18 0",
+        "M3 9c0 1.66 4.03 3 9 3s9-1.34 9-3",
+        "M3 9v6c0 1.66 4.03 3 9 3s9-1.34 9-3V9",
+        "M3 15v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6",
+    ],
+    phone: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.6 12.18 19.79 19.79 0 0 1 1.52 3.6 2 2 0 0 1 3.49 1.44h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.83-1.83a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z",
+    logs: [
+        "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",
+        "M3 3v5h5",
+        "M12 7v5l4 2",
+    ],
     settings: [
         "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
         "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z",
     ],
+    // UI Icons
     search: ["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z", "M21 21l-4.35-4.35"],
     bell: [
         "M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9",
@@ -63,29 +82,19 @@ const Icons = {
         "M16 13H8M16 17H8M10 9H8",
     ],
     more: "M12 5h.01M12 12h.01M12 19h.01",
-    robot: [
-        "M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z",
-        "M3 14v7h18v-7",
-        "M8 14v4M16 14v4M12 14v4",
-    ],
-    phone: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.6 12.18 19.79 19.79 0 0 1 1.52 3.6 2 2 0 0 1 3.49 1.44h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.83-1.83a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z",
     check: ["M22 11.08V12a10 10 0 1 1-5.93-9.14", "M22 4 12 14.01l-3-3"],
     clock: ["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z", "M12 6v6l4 2"],
     mic: [
         "M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z",
         "M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8",
     ],
-    doc: [
-        "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z",
-        "M14 2v6h6",
-    ],
-    support: ["M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"],
-    chevLeft: "M15 18l-6-6 6-6",
-    chevRight: "M9 18l6-6-6-6",
     globe: [
         "M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z",
         "M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
     ],
+    chevLeft: "M15 18l-6-6 6-6",
+    chevRight: "M9 18l6-6-6-6",
+    brandWave: ["M7 8v8", "M10 10v4", "M13 6v12", "M16 9v6", "M19 11v2"],
 };
 
 const agents = [
@@ -158,17 +167,177 @@ const statusConfig = {
 };
 
 const navItems = [
-    { label: "Agents", iconKey: "agents", active: true },
-    { label: "Knowledge Base", iconKey: "knowledge" },
-    { label: "Analytics", iconKey: "analytics" },
-    { label: "Workflows", iconKey: "workflows" },
-    { label: "Settings", iconKey: "settings" },
+    { id: "agents", label: "Agents", iconKey: "agents" },
+    { id: "knowledge", label: "Knowledge Base", iconKey: "knowledge" },
+    { id: "analytics", label: "Analytics", iconKey: "analytics" },
+    { id: "workflows", label: "Workflows", iconKey: "workflows" },
+    { id: "memory", label: "Memory", iconKey: "memory" },
+    { id: "phone", label: "Phone Numbers", iconKey: "phone" },
+    { id: "logs", label: "Logs", iconKey: "logs" },
+    { id: "settings", label: "Settings", iconKey: "settings" },
 ];
+
+function NavItem({ id, label, iconKey, active, onSelect }) {
+    const [isHovered, setIsHovered] = useState(false);
+    return (
+        <div
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={() => onSelect(id)}
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                padding: "14px 24px",
+                cursor: "pointer",
+                background: active
+                    ? "#25243e"
+                    : isHovered
+                      ? "rgba(255,255,255,0.03)"
+                      : "transparent",
+                color: active ? "#a78bfa" : "#8ca0b8",
+                borderRight: active
+                    ? "3px solid #a78bfa"
+                    : "3px solid transparent",
+                transition: "background 0.15s ease, color 0.15s ease",
+            }}
+        >
+            <Icon
+                d={Icons[iconKey]}
+                size={22}
+                color={active ? "#a78bfa" : "#8ca0b8"}
+                strokeWidth={1.8}
+            />
+            <span style={{ fontSize: 14.5, fontWeight: active ? 500 : 400 }}>
+                {label}
+            </span>
+        </div>
+    );
+}
+
+function Sidebar({ activeItem, onSelect }) {
+    return (
+        <aside
+            style={{
+                width: 250,
+                background: "#151724", // Solid dark slate background matching the image
+                borderRight: "1px solid #1f233a",
+                display: "flex",
+                flexDirection: "column",
+                zIndex: 20,
+            }}
+        >
+            {/* Brand Logo Area */}
+            <div
+                style={{
+                    padding: "26px 24px 30px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                }}
+            >
+                <div
+                    style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 10,
+                        background: "#8b5cf6", // Solid purple
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <Icon
+                        d={Icons.brandWave}
+                        size={22}
+                        color="#fff"
+                        strokeWidth={2}
+                    />
+                </div>
+                <span
+                    style={{
+                        color: "#e2e8f0",
+                        fontSize: 22,
+                        fontWeight: 600,
+                        letterSpacing: "-0.5px",
+                    }}
+                >
+                    Human
+                </span>
+            </div>
+
+            {/* Nav Items (Edge to edge padding handled in NavItem component) */}
+            <nav
+                style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                }}
+            >
+                {navItems.map(({ id, label, iconKey }) => (
+                    <NavItem
+                        key={id}
+                        id={id}
+                        label={label}
+                        iconKey={iconKey}
+                        active={activeItem === id}
+                        onSelect={onSelect}
+                    />
+                ))}
+            </nav>
+
+            {/* User Profile - Preserved from original code but styled to fit */}
+            <div
+                style={{
+                    padding: "20px 24px",
+                    borderTop: "1px solid rgba(255,255,255,0.04)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                }}
+            >
+                <div
+                    style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg,#7c3aed,#3b82f6)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 12,
+                        color: "#fff",
+                        fontWeight: 700,
+                    }}
+                >
+                    AR
+                </div>
+                <div>
+                    <div
+                        style={{
+                            color: "#e2e8f0",
+                            fontSize: 13,
+                            fontWeight: 500,
+                        }}
+                    >
+                        Alex Rivera
+                    </div>
+                    <div
+                        style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}
+                    >
+                        Admin
+                    </div>
+                </div>
+            </div>
+        </aside>
+    );
+}
 
 export default function Dashboard() {
     const [activePage, setActivePage] = useState(1);
     const [hoveredRow, setHoveredRow] = useState(null);
-    const [hoveredNav, setHoveredNav] = useState(null);
+    const [activeNav, setActiveNav] = useState("agents");
 
     return (
         <div
@@ -183,199 +352,11 @@ export default function Dashboard() {
         >
             <AnimatedBackground />
 
-            {/* ── Sidebar ── */}
-            <aside
-                style={{
-                    width: 230,
-                    minHeight: "100vh",
-                    background: "rgba(7,9,26,0.80)",
-                    backdropFilter: "blur(28px)",
-                    borderRight: "1px solid rgba(255,255,255,0.055)",
-                    display: "flex",
-                    flexDirection: "column",
-                    zIndex: 10,
-                    position: "relative",
-                    flexShrink: 0,
-                }}
-            >
-                {/* Logo */}
-                <div
-                    style={{
-                        padding: "22px 18px 20px",
-                        borderBottom: "1px solid rgba(255,255,255,0.055)",
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 10,
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: 38,
-                                height: 38,
-                                borderRadius: 11,
-                                background:
-                                    "linear-gradient(140deg,#7c3aed 0%,#3b82f6 100%)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                boxShadow: "0 4px 16px rgba(124,58,237,0.45)",
-                            }}
-                        >
-                            <Icon
-                                d={Icons.mic}
-                                size={17}
-                                color="#fff"
-                                strokeWidth={1.8}
-                            />
-                        </div>
-                        <div>
-                            <div
-                                style={{
-                                    color: "#f1f5f9",
-                                    fontWeight: 700,
-                                    fontSize: 15,
-                                    letterSpacing: 0.2,
-                                }}
-                            >
-                                VoiceOS
-                            </div>
-                            <div
-                                style={{
-                                    color: "rgba(255,255,255,0.28)",
-                                    fontSize: 10,
-                                    letterSpacing: 1.2,
-                                    textTransform: "uppercase",
-                                    marginTop: 1,
-                                }}
-                            >
-                                Production Env
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Nav */}
-                <nav style={{ padding: "14px 10px", flex: 1 }}>
-                    {navItems.map((item) => {
-                        const isActive = item.active;
-                        const isHov = hoveredNav === item.label;
-                        return (
-                            <div
-                                key={item.label}
-                                onMouseEnter={() => setHoveredNav(item.label)}
-                                onMouseLeave={() => setHoveredNav(null)}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    padding: "9px 12px",
-                                    borderRadius: 9,
-                                    marginBottom: 3,
-                                    cursor: "pointer",
-                                    background: isActive
-                                        ? "rgba(99,102,241,0.16)"
-                                        : isHov
-                                          ? "rgba(255,255,255,0.04)"
-                                          : "transparent",
-                                    color: isActive
-                                        ? "#a5b4fc"
-                                        : "rgba(255,255,255,0.42)",
-                                    fontSize: 13,
-                                    fontWeight: isActive ? 600 : 400,
-                                    transition: "all 0.18s",
-                                    borderLeft: isActive
-                                        ? "2px solid #6366f1"
-                                        : "2px solid transparent",
-                                }}
-                            >
-                                <Icon
-                                    d={Icons[item.iconKey]}
-                                    size={16}
-                                    color={
-                                        isActive
-                                            ? "#a5b4fc"
-                                            : "rgba(255,255,255,0.38)"
-                                    }
-                                    strokeWidth={isActive ? 2 : 1.6}
-                                />
-                                {item.label}
-                            </div>
-                        );
-                    })}
-                </nav>
-
-                {/* Create Agent CTA */}
-                <div style={{ padding: "0 12px 16px" }}>
-                    <button
-                        style={{
-                            width: "100%",
-                            padding: "10px 14px",
-                            borderRadius: 10,
-                            border: "none",
-                            background:
-                                "linear-gradient(135deg,#7c3aed 0%,#4f46e5 100%)",
-                            color: "#fff",
-                            fontSize: 13,
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 8,
-                            boxShadow: "0 4px 20px rgba(99,102,241,0.4)",
-                            letterSpacing: 0.2,
-                        }}
-                    >
-                        <Icon
-                            d={Icons.plus}
-                            size={15}
-                            color="#fff"
-                            strokeWidth={2.2}
-                        />{" "}
-                        Create Agent
-                    </button>
-                </div>
-
-                {/* Bottom */}
-                <div
-                    style={{
-                        padding: "12px 10px 22px",
-                        borderTop: "1px solid rgba(255,255,255,0.055)",
-                    }}
-                >
-                    {[
-                        { label: "Documentation", k: "doc" },
-                        { label: "Support", k: "support" },
-                    ].map((l) => (
-                        <div
-                            key={l.label}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 9,
-                                color: "rgba(255,255,255,0.28)",
-                                fontSize: 12,
-                                padding: "7px 12px",
-                                cursor: "pointer",
-                                borderRadius: 7,
-                            }}
-                        >
-                            <Icon
-                                d={Icons[l.k]}
-                                size={14}
-                                color="rgba(255,255,255,0.28)"
-                            />
-                            {l.label}
-                        </div>
-                    ))}
-                </div>
-            </aside>
+            {/* ── SIDEBAR ── */}
+            <Sidebar activeItem={activeNav} onSelect={setActiveNav} />
 
             {/* ── Main ── */}
+
             <main
                 style={{
                     flex: 1,
@@ -429,6 +410,7 @@ export default function Dashboard() {
                             }}
                         />
                     </div>
+
                     <div
                         style={{
                             display: "flex",
@@ -439,6 +421,7 @@ export default function Dashboard() {
                         <TopIconBtn iconKey="bell" />
                         <TopIconBtn iconKey="help" />
                         <TopIconBtn iconKey="grid" />
+
                         <div
                             style={{
                                 width: 1,
@@ -447,6 +430,7 @@ export default function Dashboard() {
                                 margin: "0 4px",
                             }}
                         />
+
                         <div
                             style={{
                                 display: "flex",
@@ -532,6 +516,7 @@ export default function Dashboard() {
                                 Orchestrate and monitor your voice AI fleet.
                             </p>
                         </div>
+
                         <div style={{ display: "flex", gap: 10 }}>
                             <button
                                 style={{
@@ -555,6 +540,7 @@ export default function Dashboard() {
                                 />{" "}
                                 Filters
                             </button>
+
                             <button
                                 style={{
                                     padding: "8px 18px",
@@ -598,7 +584,7 @@ export default function Dashboard() {
                             label="Total Agents"
                             value="12"
                             sub="+2 this week"
-                            iconKey="robot"
+                            iconKey="agents"
                             accent="#7c3aed"
                             accentRgb="124,58,237"
                         />
@@ -672,6 +658,7 @@ export default function Dashboard() {
                         {agents.map((agent, i) => {
                             const sc = statusConfig[agent.status];
                             const isHov = hoveredRow === i;
+
                             return (
                                 <div
                                     key={agent.id}
@@ -694,7 +681,6 @@ export default function Dashboard() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    {/* Agent Name */}
                                     <div
                                         style={{
                                             display: "flex",
@@ -745,8 +731,6 @@ export default function Dashboard() {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Version */}
                                     <div>
                                         <span
                                             style={{
@@ -764,8 +748,6 @@ export default function Dashboard() {
                                             {agent.version}
                                         </span>
                                     </div>
-
-                                    {/* Mode */}
                                     <div
                                         style={{
                                             display: "flex",
@@ -786,8 +768,6 @@ export default function Dashboard() {
                                         />
                                         {agent.mode}
                                     </div>
-
-                                    {/* Type */}
                                     <div
                                         style={{
                                             color: "rgba(255,255,255,0.5)",
@@ -796,8 +776,6 @@ export default function Dashboard() {
                                     >
                                         {agent.type}
                                     </div>
-
-                                    {/* Status */}
                                     <div>
                                         <span
                                             style={{
@@ -830,8 +808,6 @@ export default function Dashboard() {
                                             {agent.status}
                                         </span>
                                     </div>
-
-                                    {/* Last Edited */}
                                     <div
                                         style={{
                                             color: "rgba(255,255,255,0.32)",
@@ -840,8 +816,6 @@ export default function Dashboard() {
                                     >
                                         {agent.edited}
                                     </div>
-
-                                    {/* More */}
                                     <div
                                         style={{
                                             display: "flex",
