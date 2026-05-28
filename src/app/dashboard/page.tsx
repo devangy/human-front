@@ -30,7 +30,6 @@ const Icon = ({
 );
 
 const Icons = {
-    // Nav Icons
     agents: [
         "M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z",
         "M3 14v7h18v-7",
@@ -61,7 +60,6 @@ const Icons = {
         "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
         "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z",
     ],
-    // UI Icons
     search: ["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z", "M21 21l-4.35-4.35"],
     bell: [
         "M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9",
@@ -151,18 +149,15 @@ const agents = [
 const statusConfig = {
     Active: {
         color: "#34d399",
-        bg: "rgba(52,211,153,0.10)",
-        border: "rgba(52,211,153,0.2)",
+        dot: "#34d399",
     },
     Draft: {
         color: "#94a3b8",
-        bg: "rgba(148,163,184,0.10)",
-        border: "rgba(148,163,184,0.2)",
+        dot: "#94a3b8",
     },
     Paused: {
         color: "#fb923c",
-        bg: "rgba(251,146,60,0.10)",
-        border: "rgba(251,146,60,0.2)",
+        dot: "#fb923c",
     },
 };
 
@@ -220,14 +215,13 @@ function Sidebar({ activeItem, onSelect }) {
         <aside
             style={{
                 width: 250,
-                background: "#151724", // Solid dark slate background matching the image
+                background: "#151724",
                 borderRight: "1px solid #1f233a",
                 display: "flex",
                 flexDirection: "column",
                 zIndex: 20,
             }}
         >
-            {/* Brand Logo Area */}
             <div
                 style={{
                     padding: "26px 24px 30px",
@@ -241,7 +235,7 @@ function Sidebar({ activeItem, onSelect }) {
                         width: 40,
                         height: 40,
                         borderRadius: 10,
-                        background: "#8b5cf6", // Solid purple
+                        background: "#8b5cf6",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -266,7 +260,6 @@ function Sidebar({ activeItem, onSelect }) {
                 </span>
             </div>
 
-            {/* Nav Items (Edge to edge padding handled in NavItem component) */}
             <nav
                 style={{
                     flex: 1,
@@ -287,7 +280,6 @@ function Sidebar({ activeItem, onSelect }) {
                 ))}
             </nav>
 
-            {/* User Profile - Preserved from original code but styled to fit */}
             <div
                 style={{
                     padding: "20px 24px",
@@ -345,65 +337,59 @@ export default function Dashboard() {
                 display: "flex",
                 height: "100vh",
                 fontFamily: "'Inter','DM Sans','Segoe UI',sans-serif",
-                position: "relative",
+                background: "#13141f",
                 overflow: "hidden",
-                background: "#060814",
             }}
         >
-            <AnimatedBackground />
-
-            {/* ── SIDEBAR ── */}
+            {/* ── SIDEBAR (unchanged) ── */}
             <Sidebar activeItem={activeNav} onSelect={setActiveNav} />
 
-            {/* ── Main ── */}
-
+            {/* ── MAIN CONTENT ── */}
             <main
                 style={{
                     flex: 1,
                     overflowY: "auto",
-                    zIndex: 10,
-                    position: "relative",
+                    background: "#13141f",
+                    display: "flex",
+                    flexDirection: "column",
                 }}
             >
-                {/* Topbar */}
+                {/* ── TOPBAR ── */}
                 <div
                     style={{
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "13px 28px",
-                        background: "rgba(7,9,26,0.60)",
-                        backdropFilter: "blur(24px)",
-                        borderBottom: "1px solid rgba(255,255,255,0.055)",
+                        justifyContent: "flex-end",
+                        padding: "14px 28px",
+                        background: "#13141f",
+                        borderBottom: "1px solid #1e2235",
+                        gap: 12,
                         position: "sticky",
                         top: 0,
                         zIndex: 20,
                     }}
                 >
+                    {/* Search bar */}
                     <div
                         style={{
                             display: "flex",
                             alignItems: "center",
                             gap: 9,
-                            background: "rgba(255,255,255,0.045)",
-                            border: "1px solid rgba(255,255,255,0.09)",
-                            borderRadius: 9,
-                            padding: "7px 14px",
-                            width: 290,
+                            background: "#1c1e2e",
+                            border: "1px solid #2a2d45",
+                            borderRadius: 8,
+                            padding: "8px 14px",
+                            width: 280,
                         }}
                     >
-                        <Icon
-                            d={Icons.search}
-                            size={15}
-                            color="rgba(255,255,255,0.28)"
-                        />
+                        <Icon d={Icons.search} size={14} color="#4a5070" />
                         <input
                             placeholder="Search agents, nodes, or files…"
                             style={{
                                 background: "transparent",
                                 border: "none",
                                 outline: "none",
-                                color: "rgba(255,255,255,0.55)",
+                                color: "#4a5070",
                                 fontSize: 13,
                                 width: "100%",
                                 fontFamily: "inherit",
@@ -411,94 +397,40 @@ export default function Dashboard() {
                         />
                     </div>
 
+                    {/* Bell icon */}
                     <div
                         style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 8,
+                            background: "#1c1e2e",
+                            border: "1px solid #2a2d45",
                             display: "flex",
                             alignItems: "center",
-                            gap: 10,
+                            justifyContent: "center",
+                            cursor: "pointer",
                         }}
                     >
-                        <TopIconBtn iconKey="bell" />
-                        <TopIconBtn iconKey="help" />
-                        <TopIconBtn iconKey="grid" />
-
-                        <div
-                            style={{
-                                width: 1,
-                                height: 22,
-                                background: "rgba(255,255,255,0.08)",
-                                margin: "0 4px",
-                            }}
-                        />
-
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                                cursor: "pointer",
-                            }}
-                        >
-                            <div style={{ textAlign: "right" }}>
-                                <div
-                                    style={{
-                                        color: "#f1f5f9",
-                                        fontSize: 13,
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Alex Rivera
-                                </div>
-                                <div
-                                    style={{
-                                        color: "rgba(255,255,255,0.32)",
-                                        fontSize: 11,
-                                        marginTop: 1,
-                                    }}
-                                >
-                                    Admin
-                                </div>
-                            </div>
-                            <div
-                                style={{
-                                    width: 34,
-                                    height: 34,
-                                    borderRadius: "50%",
-                                    background:
-                                        "linear-gradient(135deg,#7c3aed,#3b82f6)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontSize: 12,
-                                    color: "#fff",
-                                    fontWeight: 700,
-                                    boxShadow:
-                                        "0 2px 10px rgba(99,102,241,0.4)",
-                                    flexShrink: 0,
-                                }}
-                            >
-                                AR
-                            </div>
-                        </div>
+                        <Icon d={Icons.bell} size={16} color="#4a5070" />
                     </div>
                 </div>
 
-                {/* Body */}
-                <div style={{ padding: "26px 28px" }}>
+                {/* ── BODY ── */}
+                <div style={{ padding: "28px 28px", flex: 1 }}>
                     {/* Page Header */}
                     <div
                         style={{
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "flex-start",
-                            marginBottom: 26,
+                            marginBottom: 24,
                         }}
                     >
                         <div>
                             <h1
                                 style={{
-                                    color: "#f1f5f9",
-                                    fontSize: 21,
+                                    color: "#e8eaf6",
+                                    fontSize: 20,
                                     fontWeight: 700,
                                     margin: 0,
                                     letterSpacing: -0.3,
@@ -508,9 +440,9 @@ export default function Dashboard() {
                             </h1>
                             <p
                                 style={{
-                                    color: "rgba(255,255,255,0.36)",
+                                    color: "#4a5070",
                                     fontSize: 13,
-                                    margin: "5px 0 0",
+                                    margin: "4px 0 0",
                                 }}
                             >
                                 Orchestrate and monitor your voice AI fleet.
@@ -522,21 +454,22 @@ export default function Dashboard() {
                                 style={{
                                     padding: "8px 16px",
                                     borderRadius: 8,
-                                    border: "1px solid rgba(255,255,255,0.11)",
-                                    background: "rgba(255,255,255,0.045)",
-                                    color: "rgba(255,255,255,0.65)",
+                                    border: "1px solid #2a2d45",
+                                    background: "#1c1e2e",
+                                    color: "#8892b0",
                                     fontSize: 13,
                                     cursor: "pointer",
                                     display: "flex",
                                     alignItems: "center",
                                     gap: 7,
                                     fontFamily: "inherit",
+                                    fontWeight: 500,
                                 }}
                             >
                                 <Icon
                                     d={Icons.filter}
                                     size={14}
-                                    color="rgba(255,255,255,0.6)"
+                                    color="#8892b0"
                                 />{" "}
                                 Filters
                             </button>
@@ -546,8 +479,7 @@ export default function Dashboard() {
                                     padding: "8px 18px",
                                     borderRadius: 8,
                                     border: "none",
-                                    background:
-                                        "linear-gradient(135deg,#7c3aed 0%,#4f46e5 100%)",
+                                    background: "#7c3aed",
                                     color: "#fff",
                                     fontSize: 13,
                                     fontWeight: 600,
@@ -555,8 +487,6 @@ export default function Dashboard() {
                                     display: "flex",
                                     alignItems: "center",
                                     gap: 7,
-                                    boxShadow:
-                                        "0 4px 18px rgba(99,102,241,0.42)",
                                     fontFamily: "inherit",
                                 }}
                             >
@@ -571,19 +501,20 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Stat Cards */}
+                    {/* ── STAT CARDS ── */}
                     <div
                         style={{
                             display: "grid",
                             gridTemplateColumns: "repeat(4,1fr)",
                             gap: 14,
-                            marginBottom: 24,
+                            marginBottom: 22,
                         }}
                     >
                         <StatCard
                             label="Total Agents"
                             value="12"
                             sub="+2 this week"
+                            subColor="#8892b0"
                             iconKey="agents"
                             accent="#7c3aed"
                             accentRgb="124,58,237"
@@ -592,6 +523,7 @@ export default function Dashboard() {
                             label="Active Calls"
                             value="48"
                             sub="Live now"
+                            subColor="#34d399"
                             iconKey="phone"
                             accent="#3b82f6"
                             accentRgb="59,130,246"
@@ -601,6 +533,7 @@ export default function Dashboard() {
                             label="Success Rate"
                             value="94.2%"
                             sub="avg"
+                            subColor="#8892b0"
                             iconKey="check"
                             accent="#10b981"
                             accentRgb="16,185,129"
@@ -608,20 +541,20 @@ export default function Dashboard() {
                         <StatCard
                             label="Total Minutes"
                             value="1,402"
-                            sub="this billing cycle"
+                            sub=""
+                            subColor="#8892b0"
                             iconKey="clock"
                             accent="#f59e0b"
                             accentRgb="245,158,11"
                         />
                     </div>
 
-                    {/* Agent Table */}
+                    {/* ── AGENT TABLE ── */}
                     <div
                         style={{
-                            background: "rgba(10,12,32,0.72)",
-                            backdropFilter: "blur(24px)",
-                            border: "1px solid rgba(255,255,255,0.07)",
-                            borderRadius: 14,
+                            background: "#181a2a",
+                            border: "1px solid #1e2235",
+                            borderRadius: 12,
                             overflow: "hidden",
                         }}
                     >
@@ -631,14 +564,14 @@ export default function Dashboard() {
                                 display: "grid",
                                 gridTemplateColumns:
                                     "2.6fr 0.9fr 1fr 0.9fr 1.1fr 1.5fr 36px",
-                                padding: "11px 20px",
-                                borderBottom:
-                                    "1px solid rgba(255,255,255,0.055)",
-                                color: "rgba(255,255,255,0.28)",
+                                padding: "12px 22px",
+                                borderBottom: "1px solid #1e2235",
+                                color: "#3a3f5c",
                                 fontSize: 11,
                                 fontWeight: 600,
                                 letterSpacing: 0.8,
                                 textTransform: "uppercase",
+                                background: "#181a2a",
                             }}
                         >
                             {[
@@ -668,19 +601,20 @@ export default function Dashboard() {
                                         display: "grid",
                                         gridTemplateColumns:
                                             "2.6fr 0.9fr 1fr 0.9fr 1.1fr 1.5fr 36px",
-                                        padding: "16px 20px",
+                                        padding: "18px 22px",
                                         borderBottom:
                                             i < agents.length - 1
-                                                ? "1px solid rgba(255,255,255,0.04)"
+                                                ? "1px solid #1e2235"
                                                 : "none",
                                         alignItems: "center",
                                         background: isHov
-                                            ? "rgba(255,255,255,0.025)"
+                                            ? "#1d1f30"
                                             : "transparent",
-                                        transition: "background 0.18s",
+                                        transition: "background 0.15s",
                                         cursor: "pointer",
                                     }}
                                 >
+                                    {/* Agent Name */}
                                     <div
                                         style={{
                                             display: "flex",
@@ -692,9 +626,8 @@ export default function Dashboard() {
                                             style={{
                                                 width: 36,
                                                 height: 36,
-                                                borderRadius: 10,
+                                                borderRadius: 9,
                                                 background: agent.iconBg,
-                                                border: `1px solid ${agent.iconColor}30`,
                                                 display: "flex",
                                                 alignItems: "center",
                                                 justifyContent: "center",
@@ -711,7 +644,7 @@ export default function Dashboard() {
                                         <div>
                                             <div
                                                 style={{
-                                                    color: "#f1f5f9",
+                                                    color: "#cdd5f0",
                                                     fontSize: 13,
                                                     fontWeight: 600,
                                                 }}
@@ -720,7 +653,7 @@ export default function Dashboard() {
                                             </div>
                                             <div
                                                 style={{
-                                                    color: "rgba(255,255,255,0.26)",
+                                                    color: "#3a3f5c",
                                                     fontSize: 11,
                                                     marginTop: 2,
                                                     fontFamily:
@@ -731,29 +664,32 @@ export default function Dashboard() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Version */}
                                     <div>
                                         <span
                                             style={{
-                                                background:
-                                                    "rgba(255,255,255,0.07)",
-                                                color: "rgba(255,255,255,0.65)",
+                                                background: "#1c1e2e",
+                                                color: "#8892b0",
                                                 padding: "3px 9px",
                                                 borderRadius: 5,
                                                 fontSize: 11,
                                                 fontWeight: 600,
-                                                letterSpacing: 0.5,
-                                                border: "1px solid rgba(255,255,255,0.08)",
+                                                border: "1px solid #2a2d45",
+                                                letterSpacing: 0.3,
                                             }}
                                         >
                                             {agent.version}
                                         </span>
                                     </div>
+
+                                    {/* Mode */}
                                     <div
                                         style={{
                                             display: "flex",
                                             alignItems: "center",
                                             gap: 6,
-                                            color: "rgba(255,255,255,0.55)",
+                                            color: "#8892b0",
                                             fontSize: 13,
                                         }}
                                     >
@@ -764,73 +700,75 @@ export default function Dashboard() {
                                                     : Icons.prompt
                                             }
                                             size={14}
-                                            color="rgba(255,255,255,0.4)"
+                                            color="#3a3f5c"
                                         />
                                         {agent.mode}
                                     </div>
+
+                                    {/* Type */}
                                     <div
                                         style={{
-                                            color: "rgba(255,255,255,0.5)",
+                                            color: "#8892b0",
                                             fontSize: 13,
                                         }}
                                     >
                                         {agent.type}
                                     </div>
+
+                                    {/* Status */}
                                     <div>
                                         <span
                                             style={{
                                                 display: "inline-flex",
                                                 alignItems: "center",
                                                 gap: 6,
-                                                background: sc.bg,
                                                 color: sc.color,
-                                                padding: "4px 10px",
-                                                borderRadius: 6,
-                                                fontSize: 11.5,
+                                                fontSize: 13,
                                                 fontWeight: 500,
-                                                border: `1px solid ${sc.border}`,
                                             }}
                                         >
                                             <span
                                                 style={{
-                                                    width: 5.5,
-                                                    height: 5.5,
+                                                    width: 7,
+                                                    height: 7,
                                                     borderRadius: "50%",
-                                                    background: sc.color,
+                                                    background: sc.dot,
                                                     display: "inline-block",
+                                                    flexShrink: 0,
                                                     boxShadow:
                                                         agent.status ===
                                                         "Active"
-                                                            ? `0 0 7px ${sc.color}`
+                                                            ? `0 0 6px ${sc.dot}`
                                                             : "none",
                                                 }}
                                             />
                                             {agent.status}
                                         </span>
                                     </div>
+
+                                    {/* Last Edited */}
                                     <div
                                         style={{
-                                            color: "rgba(255,255,255,0.32)",
+                                            color: "#4a5070",
                                             fontSize: 12,
                                         }}
                                     >
                                         {agent.edited}
                                     </div>
+
+                                    {/* More */}
                                     <div
                                         style={{
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            color: "rgba(255,255,255,0.28)",
                                             cursor: "pointer",
-                                            borderRadius: 6,
-                                            padding: 4,
                                         }}
                                     >
                                         <Icon
                                             d={Icons.more}
                                             size={16}
-                                            color="rgba(255,255,255,0.35)"
+                                            color="#3a3f5c"
                                             strokeWidth={2.5}
                                         />
                                     </div>
@@ -844,10 +782,11 @@ export default function Dashboard() {
                                 display: "flex",
                                 justifyContent: "space-between",
                                 alignItems: "center",
-                                padding: "13px 20px",
-                                borderTop: "1px solid rgba(255,255,255,0.055)",
-                                color: "rgba(255,255,255,0.28)",
+                                padding: "14px 22px",
+                                borderTop: "1px solid #1e2235",
+                                color: "#3a3f5c",
                                 fontSize: 12,
+                                background: "#181a2a",
                             }}
                         >
                             <span>Showing 1 to 4 of 12 agents</span>
@@ -859,8 +798,8 @@ export default function Dashboard() {
                                 >
                                     <Icon
                                         d={Icons.chevLeft}
-                                        size={14}
-                                        color="rgba(255,255,255,0.5)"
+                                        size={13}
+                                        color="#4a5070"
                                     />
                                 </PageBtn>
                                 {[1, 2, 3].map((n) => (
@@ -879,8 +818,8 @@ export default function Dashboard() {
                                 >
                                     <Icon
                                         d={Icons.chevRight}
-                                        size={14}
-                                        color="rgba(255,255,255,0.5)"
+                                        size={13}
+                                        color="#4a5070"
                                     />
                                 </PageBtn>
                             </div>
@@ -894,167 +833,49 @@ export default function Dashboard() {
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
-function AnimatedBackground() {
+function StatCard({
+    label,
+    value,
+    sub,
+    subColor,
+    iconKey,
+    accent,
+    accentRgb,
+    live,
+}) {
     return (
         <div
             style={{
-                position: "fixed",
-                inset: 0,
-                overflow: "hidden",
-                zIndex: 0,
-            }}
-        >
-            <style>{`
-        @keyframes b1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(55px,-75px) scale(1.14)}66%{transform:translate(-38px,55px) scale(0.9)}}
-        @keyframes b2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-75px,48px) scale(1.1)}66%{transform:translate(65px,-38px) scale(0.94)}}
-        @keyframes b3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(38px,75px) scale(1.18)}}
-        @keyframes b4{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-55px,-48px) scale(1.06)}80%{transform:translate(48px,28px) scale(0.9)}}
-        @keyframes b5{0%,100%{transform:translate(0,0) scale(1)}60%{transform:translate(40px,-60px) scale(1.08)}}
-      `}</style>
-            <div
-                style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "#060814",
-                }}
-            />
-            <div
-                style={{
-                    position: "absolute",
-                    top: "-18%",
-                    left: "-8%",
-                    width: 680,
-                    height: 680,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle,rgba(30,58,190,0.52) 0%,rgba(18,26,120,0.28) 45%,transparent 70%)",
-                    filter: "blur(65px)",
-                    animation: "b1 19s ease-in-out infinite",
-                }}
-            />
-            <div
-                style={{
-                    position: "absolute",
-                    top: "8%",
-                    left: "28%",
-                    width: 580,
-                    height: 480,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle,rgba(40,55,215,0.36) 0%,rgba(24,38,165,0.18) 50%,transparent 70%)",
-                    filter: "blur(85px)",
-                    animation: "b2 23s ease-in-out infinite",
-                }}
-            />
-            <div
-                style={{
-                    position: "absolute",
-                    top: "-22%",
-                    right: "-4%",
-                    width: 540,
-                    height: 580,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle,rgba(90,42,210,0.38) 0%,rgba(62,22,165,0.18) 50%,transparent 70%)",
-                    filter: "blur(75px)",
-                    animation: "b3 26s ease-in-out infinite",
-                }}
-            />
-            <div
-                style={{
-                    position: "absolute",
-                    bottom: "-12%",
-                    left: "4%",
-                    width: 490,
-                    height: 490,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle,rgba(16,32,140,0.42) 0%,rgba(8,16,82,0.22) 55%,transparent 70%)",
-                    filter: "blur(95px)",
-                    animation: "b4 21s ease-in-out infinite",
-                }}
-            />
-            <div
-                style={{
-                    position: "absolute",
-                    bottom: "18%",
-                    right: "8%",
-                    width: 380,
-                    height: 380,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle,rgba(6,102,190,0.22) 0%,rgba(4,62,140,0.1) 55%,transparent 70%)",
-                    filter: "blur(105px)",
-                    animation: "b5 29s ease-in-out infinite",
-                }}
-            />
-            <div
-                style={{
-                    position: "absolute",
-                    top: "40%",
-                    left: "50%",
-                    width: 320,
-                    height: 320,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%)",
-                    filter: "blur(80px)",
-                    animation: "b1 24s ease-in-out infinite reverse",
-                }}
-            />
-        </div>
-    );
-}
-
-function StatCard({ label, value, sub, iconKey, accent, accentRgb, live }) {
-    return (
-        <div
-            style={{
-                background: "rgba(10,12,32,0.70)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.07)",
-                borderRadius: 13,
+                background: "#181a2a",
+                border: "1px solid #1e2235",
+                borderRadius: 12,
                 padding: "18px 20px",
-                position: "relative",
-                overflow: "hidden",
             }}
         >
-            <div
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    width: 90,
-                    height: 90,
-                    background: `radial-gradient(circle at 80% 20%,rgba(${accentRgb},0.18) 0%,transparent 70%)`,
-                    pointerEvents: "none",
-                }}
-            />
             <div
                 style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 12,
+                    alignItems: "flex-start",
+                    marginBottom: 14,
                 }}
             >
                 <span
                     style={{
-                        color: "rgba(255,255,255,0.42)",
+                        color: "#4a5070",
                         fontSize: 12,
                         fontWeight: 500,
-                        letterSpacing: 0.3,
+                        letterSpacing: 0.2,
                     }}
                 >
                     {label}
                 </span>
                 <div
                     style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 9,
-                        background: `rgba(${accentRgb},0.14)`,
-                        border: `1px solid rgba(${accentRgb},0.22)`,
+                        width: 30,
+                        height: 30,
+                        borderRadius: 8,
+                        background: `rgba(${accentRgb},0.12)`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1068,60 +889,44 @@ function StatCard({ label, value, sub, iconKey, accent, accentRgb, live }) {
                     />
                 </div>
             </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                 <span
                     style={{
-                        color: "#f1f5f9",
-                        fontSize: 26,
+                        color: "#e8eaf6",
+                        fontSize: 28,
                         fontWeight: 700,
                         letterSpacing: -0.5,
+                        lineHeight: 1,
                     }}
                 >
                     {value}
                 </span>
-                <span
-                    style={{
-                        fontSize: 11,
-                        color: live ? "#34d399" : "rgba(255,255,255,0.32)",
-                    }}
-                >
-                    {live && (
-                        <span
-                            style={{
-                                display: "inline-block",
-                                width: 5.5,
-                                height: 5.5,
-                                borderRadius: "50%",
-                                background: "#34d399",
-                                marginRight: 5,
-                                boxShadow: "0 0 6px #34d399",
-                                verticalAlign: "middle",
-                            }}
-                        />
-                    )}
-                    {sub}
-                </span>
+                {sub && (
+                    <span
+                        style={{
+                            fontSize: 12,
+                            color: subColor || "#4a5070",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                        }}
+                    >
+                        {live && (
+                            <span
+                                style={{
+                                    display: "inline-block",
+                                    width: 6,
+                                    height: 6,
+                                    borderRadius: "50%",
+                                    background: "#34d399",
+                                    boxShadow: "0 0 5px #34d399",
+                                }}
+                            />
+                        )}
+                        {sub}
+                    </span>
+                )}
             </div>
-        </div>
-    );
-}
-
-function TopIconBtn({ iconKey }) {
-    return (
-        <div
-            style={{
-                width: 32,
-                height: 32,
-                borderRadius: 8,
-                background: "rgba(255,255,255,0.05)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                border: "1px solid rgba(255,255,255,0.08)",
-            }}
-        >
-            <Icon d={Icons[iconKey]} size={15} color="rgba(255,255,255,0.5)" />
         </div>
     );
 }
@@ -1131,15 +936,13 @@ function PageBtn({ children, active, onClick }) {
         <button
             onClick={onClick}
             style={{
-                minWidth: 30,
-                height: 30,
+                minWidth: 32,
+                height: 32,
                 borderRadius: 6,
                 border: "1px solid",
-                borderColor: active ? "#6366f1" : "rgba(255,255,255,0.08)",
-                background: active
-                    ? "linear-gradient(135deg,#7c3aed,#4f46e5)"
-                    : "rgba(255,255,255,0.04)",
-                color: active ? "#fff" : "rgba(255,255,255,0.45)",
+                borderColor: active ? "#7c3aed" : "#2a2d45",
+                background: active ? "#7c3aed" : "#1c1e2e",
+                color: active ? "#fff" : "#4a5070",
                 fontSize: 12,
                 cursor: "pointer",
                 fontWeight: active ? 600 : 400,
@@ -1147,6 +950,7 @@ function PageBtn({ children, active, onClick }) {
                 alignItems: "center",
                 justifyContent: "center",
                 padding: "0 4px",
+                fontFamily: "inherit",
             }}
         >
             {children}
