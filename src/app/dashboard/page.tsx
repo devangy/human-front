@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-// ── SVG Icon primitives ──────────────────────────────────────────────────────
+import { useState, useRef, useEffect } from "react";
 
 const Icon = ({
     d,
@@ -70,7 +68,6 @@ const Icons = {
         "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3",
         "M12 17h.01",
     ],
-    grid: "M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z",
     plus: "M12 5v14M5 12h14",
     filter: "M22 3H2l8 9.46V19l4 2v-8.54L22 3z",
     flow: ["M5 12H19", "M12 5l7 7-7 7"],
@@ -93,6 +90,32 @@ const Icons = {
     chevLeft: "M15 18l-6-6 6-6",
     chevRight: "M9 18l6-6-6-6",
     brandWave: ["M7 8v8", "M10 10v4", "M13 6v12", "M16 9v6", "M19 11v2"],
+    x: "M18 6 6 18M6 6l12 12",
+    chat: ["M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"],
+    inbound: [
+        "M16 2v4",
+        "" + "M8 2v4",
+        "M3 10h18",
+        "M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
+    ],
+    outbound: [
+        "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07",
+        "M1.52 3.6 A2 2 0 0 1 3.49 1.44h3",
+        "M5 10l4 4-4 4",
+        "M9 14H3",
+    ],
+    widget: [
+        "M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5z",
+        "M14 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5z",
+        "M4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4z",
+        "M14 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4z",
+    ],
+    node: [
+        "M12 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+        "M5 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+        "M19 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+        "M12 5v10M12 15l-7 3M12 15l7 3",
+    ],
 };
 
 const agents = [
@@ -147,18 +170,9 @@ const agents = [
 ];
 
 const statusConfig = {
-    Active: {
-        color: "#34d399",
-        dot: "#34d399",
-    },
-    Draft: {
-        color: "#94a3b8",
-        dot: "#94a3b8",
-    },
-    Paused: {
-        color: "#fb923c",
-        dot: "#fb923c",
-    },
+    Active: { color: "#34d399", dot: "#34d399" },
+    Draft: { color: "#94a3b8", dot: "#94a3b8" },
+    Paused: { color: "#fb923c", dot: "#fb923c" },
 };
 
 const navItems = [
@@ -259,7 +273,6 @@ function Sidebar({ activeItem, onSelect }) {
                     Human
                 </span>
             </div>
-
             <nav
                 style={{
                     flex: 1,
@@ -279,7 +292,6 @@ function Sidebar({ activeItem, onSelect }) {
                     />
                 ))}
             </nav>
-
             <div
                 style={{
                     padding: "20px 24px",
@@ -326,10 +338,612 @@ function Sidebar({ activeItem, onSelect }) {
     );
 }
 
+// ── Agent Type Modal ─────────────────────────────────────────────────────────
+function AgentTypeModal({ onClose, onNext }) {
+    const [selected, setSelected] = useState("inbound");
+
+    const options = [
+        {
+            id: "inbound",
+            label: "Inbound",
+            desc: "For incoming calls",
+            iconKey: "phone",
+            iconBg: "#1e3a5f",
+            iconColor: "#60a5fa",
+        },
+        {
+            id: "outbound",
+            label: "Outbound",
+            desc: "For outgoing calls",
+            iconKey: "mic",
+            iconBg: "#2d1f4e",
+            iconColor: "#a78bfa",
+        },
+        {
+            id: "widget",
+            label: "Voice Widget",
+            desc: "Embeddable widget",
+            iconKey: "widget",
+            iconBg: "#1a3a2e",
+            iconColor: "#34d399",
+        },
+    ];
+
+    return (
+        <div
+            style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.65)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 100,
+            }}
+        >
+            <div
+                style={{
+                    background: "#1a1c2e",
+                    border: "1px solid #2a2d45",
+                    borderRadius: 16,
+                    padding: "32px 28px",
+                    width: 520,
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 24,
+                    }}
+                >
+                    <h2
+                        style={{
+                            color: "#e8eaf6",
+                            fontSize: 18,
+                            fontWeight: 700,
+                            margin: 0,
+                        }}
+                    >
+                        Choose the type of agent
+                    </h2>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 4,
+                            display: "flex",
+                        }}
+                    >
+                        <Icon d={Icons.x} size={18} color="#4a5070" />
+                    </button>
+                </div>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr 1fr",
+                        gap: 12,
+                        marginBottom: 28,
+                    }}
+                >
+                    {options.map((opt) => (
+                        <div
+                            key={opt.id}
+                            onClick={() => setSelected(opt.id)}
+                            style={{
+                                border: `2px solid ${selected === opt.id ? "#7c3aed" : "#2a2d45"}`,
+                                borderRadius: 12,
+                                padding: "20px 14px",
+                                cursor: "pointer",
+                                background:
+                                    selected === opt.id
+                                        ? "rgba(124,58,237,0.08)"
+                                        : "#13141f",
+                                transition: "all 0.15s",
+                                position: "relative",
+                            }}
+                        >
+                            {selected === opt.id && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: 10,
+                                        right: 10,
+                                        width: 18,
+                                        height: 18,
+                                        borderRadius: "50%",
+                                        background: "#7c3aed",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: 7,
+                                            height: 7,
+                                            borderRadius: "50%",
+                                            background: "#fff",
+                                        }}
+                                    />
+                                </div>
+                            )}
+                            <div
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 10,
+                                    background: opt.iconBg,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginBottom: 12,
+                                }}
+                            >
+                                <Icon
+                                    d={Icons[opt.iconKey]}
+                                    size={18}
+                                    color={opt.iconColor}
+                                    strokeWidth={1.7}
+                                />
+                            </div>
+                            <div
+                                style={{
+                                    color: "#cdd5f0",
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    marginBottom: 4,
+                                }}
+                            >
+                                {opt.label}
+                            </div>
+                            <div style={{ color: "#4a5070", fontSize: 11 }}>
+                                {opt.desc}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: "9px 20px",
+                            borderRadius: 8,
+                            border: "1px solid #2a2d45",
+                            background: "transparent",
+                            color: "#8892b0",
+                            fontSize: 13,
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            fontWeight: 500,
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={() => onNext(selected)}
+                        style={{
+                            padding: "9px 24px",
+                            borderRadius: 8,
+                            border: "none",
+                            background: "#7c3aed",
+                            color: "#fff",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                        }}
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── Editing Mode Modal ───────────────────────────────────────────────────────
+function EditingModeModal({ agentType, onClose, onBack }) {
+    const [selected, setSelected] = useState("prompt");
+
+    const options = [
+        {
+            id: "prompt",
+            label: "Prompt Builder",
+            desc: "Write a single prompt to define your agent's behavior.",
+            iconKey: "prompt",
+            iconBg: "#2d1f4e",
+            iconColor: "#a78bfa",
+        },
+        {
+            id: "flow",
+            label: "Flow Designer",
+            desc: "Design structured dialogue paths with nodes and conditions.",
+            iconKey: "node",
+            iconBg: "#1e3a5f",
+            iconColor: "#60a5fa",
+        },
+    ];
+
+    return (
+        <div
+            style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.65)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 100,
+            }}
+        >
+            <div
+                style={{
+                    background: "#1a1c2e",
+                    border: "1px solid #2a2d45",
+                    borderRadius: 16,
+                    padding: "32px 28px",
+                    width: 460,
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 24,
+                    }}
+                >
+                    <h2
+                        style={{
+                            color: "#e8eaf6",
+                            fontSize: 18,
+                            fontWeight: 700,
+                            margin: 0,
+                        }}
+                    >
+                        Select Editing Mode
+                    </h2>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 4,
+                            display: "flex",
+                        }}
+                    >
+                        <Icon d={Icons.x} size={18} color="#4a5070" />
+                    </button>
+                </div>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: 12,
+                        marginBottom: 28,
+                    }}
+                >
+                    {options.map((opt) => (
+                        <div
+                            key={opt.id}
+                            onClick={() => setSelected(opt.id)}
+                            style={{
+                                border: `2px solid ${selected === opt.id ? "#7c3aed" : "#2a2d45"}`,
+                                borderRadius: 12,
+                                padding: "20px 16px",
+                                cursor: "pointer",
+                                background:
+                                    selected === opt.id
+                                        ? "rgba(124,58,237,0.08)"
+                                        : "#13141f",
+                                transition: "all 0.15s",
+                                position: "relative",
+                            }}
+                        >
+                            {selected === opt.id && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: 10,
+                                        right: 10,
+                                        width: 18,
+                                        height: 18,
+                                        borderRadius: "50%",
+                                        background: "#7c3aed",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: 7,
+                                            height: 7,
+                                            borderRadius: "50%",
+                                            background: "#fff",
+                                        }}
+                                    />
+                                </div>
+                            )}
+                            <div
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 10,
+                                    background: opt.iconBg,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginBottom: 12,
+                                }}
+                            >
+                                <Icon
+                                    d={Icons[opt.iconKey]}
+                                    size={18}
+                                    color={opt.iconColor}
+                                    strokeWidth={1.7}
+                                />
+                            </div>
+                            <div
+                                style={{
+                                    color: "#cdd5f0",
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    marginBottom: 6,
+                                }}
+                            >
+                                {opt.label}
+                            </div>
+                            <div
+                                style={{
+                                    color: "#4a5070",
+                                    fontSize: 11,
+                                    lineHeight: 1.5,
+                                }}
+                            >
+                                {opt.desc}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: "9px 20px",
+                            borderRadius: 8,
+                            border: "1px solid #2a2d45",
+                            background: "transparent",
+                            color: "#8892b0",
+                            fontSize: 13,
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            fontWeight: 500,
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <div style={{ display: "flex", gap: 10 }}>
+                        <button
+                            onClick={onBack}
+                            style={{
+                                padding: "9px 20px",
+                                borderRadius: 8,
+                                border: "1px solid #2a2d45",
+                                background: "transparent",
+                                color: "#8892b0",
+                                fontSize: 13,
+                                cursor: "pointer",
+                                fontFamily: "inherit",
+                                fontWeight: 500,
+                            }}
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={onClose}
+                            style={{
+                                padding: "9px 24px",
+                                borderRadius: 8,
+                                border: "none",
+                                background: "#7c3aed",
+                                color: "#fff",
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                fontFamily: "inherit",
+                            }}
+                        >
+                            Create Agent
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── New Agent Dropdown ───────────────────────────────────────────────────────
+function NewAgentButton({ onSelectType }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const items = [
+        {
+            id: "voice",
+            label: "Voice Agent",
+            desc: "For phone calls and voice interactions.",
+            iconKey: "mic",
+            iconBg: "#2d1f4e",
+            iconColor: "#a78bfa",
+        },
+        {
+            id: "chat",
+            label: "Chat Agent",
+            desc: "For messaging and live chats.",
+            iconKey: "chat",
+            iconBg: "#1e3a5f",
+            iconColor: "#60a5fa",
+        },
+    ];
+
+    return (
+        <div ref={ref} style={{ position: "relative" }}>
+            <button
+                onClick={() => setOpen((v) => !v)}
+                style={{
+                    padding: "8px 18px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "#7c3aed",
+                    color: "#fff",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 7,
+                    fontFamily: "inherit",
+                }}
+            >
+                <Icon d={Icons.plus} size={14} color="#fff" strokeWidth={2.2} />{" "}
+                New Agent
+            </button>
+
+            {open && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: "calc(100% + 8px)",
+                        right: 0,
+                        background: "#1a1c2e",
+                        border: "1px solid #2a2d45",
+                        borderRadius: 12,
+                        padding: "6px",
+                        minWidth: 260,
+                        zIndex: 50,
+                        boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
+                    }}
+                >
+                    {items.map((item, i) => (
+                        <div key={item.id}>
+                            <div
+                                onClick={() => {
+                                    setOpen(false);
+                                    onSelectType(item.id);
+                                }}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 12,
+                                    padding: "10px 12px",
+                                    borderRadius: 8,
+                                    cursor: "pointer",
+                                    transition: "background 0.12s",
+                                }}
+                                onMouseEnter={(e) =>
+                                    (e.currentTarget.style.background =
+                                        "#25243e")
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.currentTarget.style.background =
+                                        "transparent")
+                                }
+                            >
+                                <div
+                                    style={{
+                                        width: 36,
+                                        height: 36,
+                                        borderRadius: 9,
+                                        background: item.iconBg,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        flexShrink: 0,
+                                    }}
+                                >
+                                    <Icon
+                                        d={Icons[item.iconKey]}
+                                        size={16}
+                                        color={item.iconColor}
+                                        strokeWidth={1.7}
+                                    />
+                                </div>
+                                <div>
+                                    <div
+                                        style={{
+                                            color: "#cdd5f0",
+                                            fontSize: 13,
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        {item.label}
+                                    </div>
+                                    <div
+                                        style={{
+                                            color: "#4a5070",
+                                            fontSize: 11,
+                                            marginTop: 2,
+                                        }}
+                                    >
+                                        {item.desc}
+                                    </div>
+                                </div>
+                            </div>
+                            {i < items.length - 1 && (
+                                <div
+                                    style={{
+                                        height: 1,
+                                        background: "#1e2235",
+                                        margin: "2px 0",
+                                    }}
+                                />
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function Dashboard() {
     const [activePage, setActivePage] = useState(1);
     const [hoveredRow, setHoveredRow] = useState(null);
     const [activeNav, setActiveNav] = useState("agents");
+    const [modal, setModal] = useState(null); // null | "agentType" | "editingMode"
+    const [agentType, setAgentType] = useState(null);
+
+    const handleAgentTypeSelected = (type) => {
+        if (type === "voice") {
+            setModal("agentType");
+        }
+        // chat agent could open a different flow
+    };
+
+    const handleAgentTypeNext = (selected) => {
+        setAgentType(selected);
+        setModal("editingMode");
+    };
 
     return (
         <div
@@ -341,10 +955,8 @@ export default function Dashboard() {
                 overflow: "hidden",
             }}
         >
-            {/* ── SIDEBAR (unchanged) ── */}
             <Sidebar activeItem={activeNav} onSelect={setActiveNav} />
 
-            {/* ── MAIN CONTENT ── */}
             <main
                 style={{
                     flex: 1,
@@ -354,7 +966,7 @@ export default function Dashboard() {
                     flexDirection: "column",
                 }}
             >
-                {/* ── TOPBAR ── */}
+                {/* TOPBAR */}
                 <div
                     style={{
                         display: "flex",
@@ -369,7 +981,6 @@ export default function Dashboard() {
                         zIndex: 20,
                     }}
                 >
-                    {/* Search bar */}
                     <div
                         style={{
                             display: "flex",
@@ -396,8 +1007,6 @@ export default function Dashboard() {
                             }}
                         />
                     </div>
-
-                    {/* Bell icon */}
                     <div
                         style={{
                             width: 36,
@@ -415,9 +1024,8 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* ── BODY ── */}
+                {/* BODY */}
                 <div style={{ padding: "28px 28px", flex: 1 }}>
-                    {/* Page Header */}
                     <div
                         style={{
                             display: "flex",
@@ -448,7 +1056,6 @@ export default function Dashboard() {
                                 Orchestrate and monitor your voice AI fleet.
                             </p>
                         </div>
-
                         <div style={{ display: "flex", gap: 10 }}>
                             <button
                                 style={{
@@ -473,35 +1080,13 @@ export default function Dashboard() {
                                 />{" "}
                                 Filters
                             </button>
-
-                            <button
-                                style={{
-                                    padding: "8px 18px",
-                                    borderRadius: 8,
-                                    border: "none",
-                                    background: "#7c3aed",
-                                    color: "#fff",
-                                    fontSize: 13,
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 7,
-                                    fontFamily: "inherit",
-                                }}
-                            >
-                                <Icon
-                                    d={Icons.plus}
-                                    size={14}
-                                    color="#fff"
-                                    strokeWidth={2.2}
-                                />{" "}
-                                New Agent
-                            </button>
+                            <NewAgentButton
+                                onSelectType={handleAgentTypeSelected}
+                            />
                         </div>
                     </div>
 
-                    {/* ── STAT CARDS ── */}
+                    {/* STAT CARDS */}
                     <div
                         style={{
                             display: "grid",
@@ -549,7 +1134,7 @@ export default function Dashboard() {
                         />
                     </div>
 
-                    {/* ── AGENT TABLE ── */}
+                    {/* AGENT TABLE */}
                     <div
                         style={{
                             background: "#181a2a",
@@ -558,7 +1143,6 @@ export default function Dashboard() {
                             overflow: "hidden",
                         }}
                     >
-                        {/* Table Header */}
                         <div
                             style={{
                                 display: "grid",
@@ -587,11 +1171,9 @@ export default function Dashboard() {
                             ))}
                         </div>
 
-                        {/* Rows */}
                         {agents.map((agent, i) => {
                             const sc = statusConfig[agent.status];
                             const isHov = hoveredRow === i;
-
                             return (
                                 <div
                                     key={agent.id}
@@ -614,7 +1196,6 @@ export default function Dashboard() {
                                         cursor: "pointer",
                                     }}
                                 >
-                                    {/* Agent Name */}
                                     <div
                                         style={{
                                             display: "flex",
@@ -664,8 +1245,6 @@ export default function Dashboard() {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Version */}
                                     <div>
                                         <span
                                             style={{
@@ -682,8 +1261,6 @@ export default function Dashboard() {
                                             {agent.version}
                                         </span>
                                     </div>
-
-                                    {/* Mode */}
                                     <div
                                         style={{
                                             display: "flex",
@@ -704,8 +1281,6 @@ export default function Dashboard() {
                                         />
                                         {agent.mode}
                                     </div>
-
-                                    {/* Type */}
                                     <div
                                         style={{
                                             color: "#8892b0",
@@ -714,8 +1289,6 @@ export default function Dashboard() {
                                     >
                                         {agent.type}
                                     </div>
-
-                                    {/* Status */}
                                     <div>
                                         <span
                                             style={{
@@ -745,8 +1318,6 @@ export default function Dashboard() {
                                             {agent.status}
                                         </span>
                                     </div>
-
-                                    {/* Last Edited */}
                                     <div
                                         style={{
                                             color: "#4a5070",
@@ -755,8 +1326,6 @@ export default function Dashboard() {
                                     >
                                         {agent.edited}
                                     </div>
-
-                                    {/* More */}
                                     <div
                                         style={{
                                             display: "flex",
@@ -776,7 +1345,6 @@ export default function Dashboard() {
                             );
                         })}
 
-                        {/* Pagination */}
                         <div
                             style={{
                                 display: "flex",
@@ -827,11 +1395,24 @@ export default function Dashboard() {
                     </div>
                 </div>
             </main>
+
+            {/* MODALS */}
+            {modal === "agentType" && (
+                <AgentTypeModal
+                    onClose={() => setModal(null)}
+                    onNext={handleAgentTypeNext}
+                />
+            )}
+            {modal === "editingMode" && (
+                <EditingModeModal
+                    agentType={agentType}
+                    onClose={() => setModal(null)}
+                    onBack={() => setModal("agentType")}
+                />
+            )}
         </div>
     );
 }
-
-// ── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({
     label,
