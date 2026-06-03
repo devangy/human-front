@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 
+// ── Icons (Used by the Dashboard UI) ──────────────
 const Icon = ({
     d,
     size = 18,
@@ -174,169 +175,6 @@ const statusConfig = {
     Draft: { color: "#94a3b8", dot: "#94a3b8" },
     Paused: { color: "#fb923c", dot: "#fb923c" },
 };
-
-const navItems = [
-    { id: "agents", label: "Agents", iconKey: "agents" },
-    { id: "knowledge", label: "Knowledge Base", iconKey: "knowledge" },
-    { id: "analytics", label: "Analytics", iconKey: "analytics" },
-    { id: "workflows", label: "Workflows", iconKey: "workflows" },
-    { id: "memory", label: "Memory", iconKey: "memory" },
-    { id: "phone", label: "Phone Numbers", iconKey: "phone" },
-    { id: "logs", label: "Logs", iconKey: "logs" },
-    { id: "settings", label: "Settings", iconKey: "settings" },
-];
-
-function NavItem({ id, label, iconKey, active, onSelect }) {
-    const [isHovered, setIsHovered] = useState(false);
-    return (
-        <div
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onClick={() => onSelect(id)}
-            style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                padding: "14px 24px",
-                cursor: "pointer",
-                background: active
-                    ? "#25243e"
-                    : isHovered
-                      ? "rgba(255,255,255,0.03)"
-                      : "transparent",
-                color: active ? "#a78bfa" : "#8ca0b8",
-                borderRight: active
-                    ? "3px solid #a78bfa"
-                    : "3px solid transparent",
-                transition: "background 0.15s ease, color 0.15s ease",
-            }}
-        >
-            <Icon
-                d={Icons[iconKey]}
-                size={22}
-                color={active ? "#a78bfa" : "#8ca0b8"}
-                strokeWidth={1.8}
-            />
-            <span style={{ fontSize: 14.5, fontWeight: active ? 500 : 400 }}>
-                {label}
-            </span>
-        </div>
-    );
-}
-
-function Sidebar({ activeItem, onSelect }) {
-    return (
-        <aside
-            style={{
-                width: 250,
-                background: "#151724",
-                borderRight: "1px solid #1f233a",
-                display: "flex",
-                flexDirection: "column",
-                zIndex: 20,
-            }}
-        >
-            <div
-                style={{
-                    padding: "26px 24px 30px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 14,
-                }}
-            >
-                <div
-                    style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 10,
-                        background: "#8b5cf6",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <Icon
-                        d={Icons.brandWave}
-                        size={22}
-                        color="#fff"
-                        strokeWidth={2}
-                    />
-                </div>
-                <span
-                    style={{
-                        color: "#e2e8f0",
-                        fontSize: 22,
-                        fontWeight: 600,
-                        letterSpacing: "-0.5px",
-                    }}
-                >
-                    Human
-                </span>
-            </div>
-            <nav
-                style={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                }}
-            >
-                {navItems.map(({ id, label, iconKey }) => (
-                    <NavItem
-                        key={id}
-                        id={id}
-                        label={label}
-                        iconKey={iconKey}
-                        active={activeItem === id}
-                        onSelect={onSelect}
-                    />
-                ))}
-            </nav>
-            <div
-                style={{
-                    padding: "20px 24px",
-                    borderTop: "1px solid rgba(255,255,255,0.04)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                }}
-            >
-                <div
-                    style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        background: "linear-gradient(135deg,#7c3aed,#3b82f6)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 12,
-                        color: "#fff",
-                        fontWeight: 700,
-                    }}
-                >
-                    AR
-                </div>
-                <div>
-                    <div
-                        style={{
-                            color: "#e2e8f0",
-                            fontSize: 13,
-                            fontWeight: 500,
-                        }}
-                    >
-                        Alex Rivera
-                    </div>
-                    <div
-                        style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}
-                    >
-                        Admin
-                    </div>
-                </div>
-            </div>
-        </aside>
-    );
-}
 
 // ── Agent Type Modal ─────────────────────────────────────────────────────────
 function AgentTypeModal({ onClose, onNext }) {
@@ -929,7 +767,6 @@ function NewAgentButton({ onSelectType }) {
 export default function Dashboard() {
     const [activePage, setActivePage] = useState(1);
     const [hoveredRow, setHoveredRow] = useState(null);
-    const [activeNav, setActiveNav] = useState("agents");
     const [modal, setModal] = useState(null); // null | "agentType" | "editingMode"
     const [agentType, setAgentType] = useState(null);
 
@@ -955,8 +792,6 @@ export default function Dashboard() {
                 overflow: "hidden",
             }}
         >
-            <Sidebar activeItem={activeNav} onSelect={setActiveNav} />
-
             <main
                 style={{
                     flex: 1,

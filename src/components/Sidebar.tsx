@@ -66,7 +66,7 @@ const Icons = {
 
 // ── Navigation Configuration ──────────────────────────────────────────────
 const navItems = [
-    { href: "/agents", label: "Agents", iconKey: "agents" },
+    { href: "/dashboard", label: "Agents", iconKey: "agents" },
     { href: "/knowledge", label: "Knowledge Base", iconKey: "knowledge" },
     { href: "/analytics", label: "Analytics", iconKey: "analytics" },
     { href: "/workflows", label: "Workflows", iconKey: "workflows" },
