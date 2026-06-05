@@ -21,11 +21,12 @@ import {
     BaseEdge,
     EdgeLabelRenderer,
     getStraightPath,
+    getSmoothStepPath,
     EdgeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-// ─── Constants for Straight Line Layout ───────────────────────────────────────
+// ─── Constants & Layout Engine ───────────────────────────────────────────────
 const CENTER_X = 300;
 const NODE_WIDTH = 260;
 const Y_STEP = 160;
@@ -33,6 +34,61 @@ const START_Y = 80;
 
 // Context to pass edge click events down to the custom edges
 const FlowActionContext = createContext<any>(null);
+
+// Utility: Find all children, grandchildren, etc., of a specific node
+const getDescendants = (nodeId: string, edges: any[]): string[] => {
+    const outEdges = edges.filter((e) => e.source === nodeId);
+    const children = outEdges.map((e) => e.target);
+    return children.reduce(
+        (acc, child) => [...acc, child, ...getDescendants(child, edges)],
+        children,
+    );
+};
+
+// Utility: Mathematically center and space branches so they never overlap
+const recalculateBranchPositions = (
+    anchorId: string,
+    currentNodes: any[],
+    currentEdges: any[],
+) => {
+    const outEdges = currentEdges.filter((e) => e.source === anchorId);
+    const conditionIds = outEdges.map((e) => e.target);
+
+    const N = conditionIds.length;
+    const SPACING_X = 280; // Distance between branches
+
+    const anchorNode = currentNodes.find((n) => n.id === anchorId);
+    if (!anchorNode) return currentNodes;
+
+    let updatedNodes = [...currentNodes];
+
+    conditionIds.forEach((condId, index) => {
+        const offsetX = (index - (N - 1) / 2) * SPACING_X;
+        const targetX = anchorNode.position.x + offsetX;
+
+        const condNode = updatedNodes.find((n) => n.id === condId);
+        if (!condNode) return;
+
+        const dx = targetX - condNode.position.x;
+
+        if (dx !== 0) {
+            const branchNodes = [
+                condId,
+                ...getDescendants(condId, currentEdges),
+            ];
+            updatedNodes = updatedNodes.map((n) => {
+                if (branchNodes.includes(n.id)) {
+                    return {
+                        ...n,
+                        position: { ...n.position, x: n.position.x + dx },
+                    };
+                }
+                return n;
+            });
+        }
+    });
+    return updatedNodes;
+};
 
 // ─── CSS ─────────────────────────────────────────────────────────────────────
 const styles = `
@@ -90,18 +146,11 @@ const styles = `
   /* ── React Flow ──────────────────────────────── */
   .wf-flow-wrap { flex: 1; overflow: hidden; }
   .wf-flow-wrap .react-flow { background-color: var(--bg) !important; background-image: radial-gradient(circle, #252a3d 1px, transparent 1px) !important; background-size: 24px 24px !important; }
-  .wf-flow-wrap .react-flow__controls { background: var(--bg2) !important; border: 1px solid var(--border) !important; border-radius: 8px !important; box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important; }
-  .wf-flow-wrap .react-flow__controls-button { background: transparent !important; border: none !important; border-bottom: 1px solid var(--border) !important; color: var(--text2) !important; fill: var(--text2) !important; }
-  .wf-flow-wrap .react-flow__controls-button:hover { background: var(--bg3) !important; fill: var(--text) !important; }
-  .wf-flow-wrap .react-flow__controls-button:last-child { border-bottom: none !important; }
-  .wf-flow-wrap .react-flow__minimap { background: var(--bg2) !important; border: 1px solid var(--border) !important; border-radius: 8px !important; }
-  .wf-flow-wrap .react-flow__minimap-mask { fill: rgba(15,17,23,0.7) !important; }
 
   /* ── Custom Node styling ──── */
   .wf-node { position: relative; transition: box-shadow 0.2s; }
-  .wf-node.selected { box-shadow: 0 0 0 2px var(--accent) !important; }
+  .wf-node.selected { box-shadow: 0 0 0 2px var(--accent) !important; z-index: 10; }
 
-  /* ACTION BUTTON FIX: Added padding-bottom to create an invisible hover bridge */
   .wf-node-actions { position: absolute; top: -42px; right: 0; display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: all 0.2s; transform: translateY(4px); padding-bottom: 12px; z-index: 100; }
   .wf-node:hover .wf-node-actions { opacity: 1; pointer-events: all; transform: translateY(0); }
 
@@ -128,22 +177,24 @@ const styles = `
   }
   .wf-card-body:empty::before { content: "No instructions added..."; color: var(--text3); font-style: italic; }
 
-  /* ── Edge Button (Subtle Default, Bold Hover) ── */
+  /* ── Square Edge/Add Buttons ── */
   .wf-edge-add-btn {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: var(--bg); /* Matches canvas */
-      border: 1.5px solid transparent;
-      color: var(--text3);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.2s; font-size: 18px; line-height: 1;
+      width: 24px; height: 24px; border-radius: 6px;
+      background: var(--bg); border: 1px solid var(--border2);
+      color: var(--text3); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s; font-size: 16px;
   }
   .wf-edge-add-btn:hover {
       background: var(--bg2); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px var(--accent-glow);
   }
 
-  /* ── Custom Add Button Node ──────────────────── */
-  .wf-add-btn-node { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: 1.5px dashed var(--border2); color: var(--text2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-  .wf-add-btn-node:hover { background: rgba(124,77,255,0.15); border-color: var(--accent); color: var(--accent2); transform: scale(1.05); box-shadow: 0 0 12px var(--accent-glow); }
+  .wf-add-btn-node {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--bg); border: 1px solid var(--border2);
+      color: var(--text2); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+  }
+  .wf-add-btn-node:hover { background: var(--bg2); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
 
   /* ── Right Panel Base (Wider) ────────────────── */
   .wf-right-panel { width: 380px; height: 100%; background: var(--bg2); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
@@ -453,6 +504,21 @@ const CloseIcon = () => (
         <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
 );
+const AddIcon = () => (
+    <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+);
 
 // Menu Icons
 const ReturnNodeIcon = () => (
@@ -692,7 +758,7 @@ const ACTION_NODES_MENU = [
         desc: "Transfer the call to a human agent",
         icon: <TransferIcon />,
         bg: "rgba(234, 179, 8, 0.1)",
-        color: "#eab308", // Amber/Yellow
+        color: "#eab308",
         emoji: "🔁",
     },
     {
@@ -701,7 +767,7 @@ const ACTION_NODES_MENU = [
         desc: "Book an appointment",
         icon: <BookingIcon />,
         bg: "rgba(249, 115, 22, 0.1)",
-        color: "#f97316", // Orange/Peach
+        color: "#f97316",
         emoji: "📅",
     },
 ];
@@ -742,7 +808,23 @@ const TABS_INIT = [
 
 // ─── Custom Elements ─────────────────────────────────────────────────────────────
 
-// Custom Edge with inline Plus Button
+// Base straight edge for anchoring directly into the Split anchor without extra '+'
+function BaseStraightEdge({
+    id,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    style,
+    markerEnd,
+}: EdgeProps) {
+    const [edgePath] = getStraightPath({ sourceX, sourceY, targetX, targetY });
+    return (
+        <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
+    );
+}
+
+// Standard Edge (Provides a floating + button to inject nodes perfectly)
 function ButtonEdge({
     id,
     sourceX,
@@ -762,9 +844,11 @@ function ButtonEdge({
         targetY,
     });
 
-    // Hide the edge plus button on the very last edge OR the edges coming from nodes 1 and 2
     const isHiddenEdge =
-        target === "add-btn" || source === "1" || source === "2";
+        target.startsWith("addBtn") ||
+        target === "add-btn" ||
+        source === "1" ||
+        source.startsWith("splitAnchor");
 
     return (
         <>
@@ -803,6 +887,241 @@ function ButtonEdge({
     );
 }
 
+// Custom Smooth Step Edge to force perfectly straight horizontal lines for branches
+function StepButtonEdge({
+    id,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    style,
+    markerEnd,
+}: EdgeProps) {
+    // centerY creates the sharp horizontal drop
+    const [edgePath] = getSmoothStepPath({
+        sourceX,
+        sourceY,
+        targetX,
+        targetY,
+        centerY: sourceY + 20,
+        borderRadius: 16,
+    });
+    return (
+        <BaseEdge id={id} path={edgePath} style={style} markerEnd={markerEnd} />
+    );
+}
+
+// Invisible visual anchor connecting the main flow to the branching horizontal lines
+function SplitAnchorNode({ id }: any) {
+    return (
+        <div style={{ width: 1, height: 1, position: "relative" }}>
+            <Handle
+                type="target"
+                position={Position.Top}
+                style={{ opacity: 0 }}
+            />
+            {/* The distinct central square plus button acting as the split point */}
+            <div
+                className="wf-edge-add-btn nodrag nopan react-flow__node-splitAnchor"
+                style={{
+                    position: "absolute",
+                    top: -12,
+                    left: -12,
+                    zIndex: 20,
+                    cursor: "pointer",
+                }}
+            >
+                +
+            </div>
+            <Handle
+                type="source"
+                position={Position.Bottom}
+                style={{ opacity: 0 }}
+            />
+        </div>
+    );
+}
+
+// Condition Node (Light purple pill with individual branch manipulation)
+function ConditionNode({ id, data, selected }: any) {
+    const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
+
+    const onDeleteCondition = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const allEdges = getEdges();
+        const inEdge = allEdges.find((edge) => edge.target === id);
+        if (!inEdge) return;
+        const anchorId = inEdge.source;
+
+        const descendants = getDescendants(id, allEdges);
+        const toDelete = new Set([id, ...descendants]);
+
+        let nextNodes = getNodes().filter((n) => !toDelete.has(n.id));
+        let nextEdges = allEdges.filter(
+            (edge) => !toDelete.has(edge.source) && !toDelete.has(edge.target),
+        );
+
+        const remainingOutEdges = nextEdges.filter(
+            (edge) => edge.source === anchorId,
+        );
+
+        if (remainingOutEdges.length === 0) {
+            // Deleted the last condition! Delete the anchor too and return to a straight path
+            nextNodes = nextNodes.filter((n) => n.id !== anchorId);
+            const anchorInEdge = allEdges.find(
+                (edge) => edge.target === anchorId,
+            );
+            nextEdges = nextEdges.filter(
+                (edge) => edge.source !== anchorId && edge.target !== anchorId,
+            );
+
+            if (anchorInEdge) {
+                const parentId = anchorInEdge.source;
+                const parentNode = getNodes().find((n) => n.id === parentId);
+                if (parentNode) {
+                    const addBtnId = `addBtn_${Date.now()}`;
+                    const addBtnNode = {
+                        id: addBtnId,
+                        type: "addBtn",
+                        origin: [0.5, 0] as [number, number],
+                        position: {
+                            x: parentNode.position.x,
+                            y: parentNode.position.y + Y_STEP,
+                        },
+                        data: {},
+                    };
+                    nextNodes.push(addBtnNode);
+                    nextEdges.push({
+                        id: `e${parentId}-${addBtnId}`,
+                        source: parentId,
+                        target: addBtnId,
+                        type: "buttonEdge",
+                        style: { stroke: "#2e3450", strokeWidth: 2 },
+                    });
+                }
+            }
+        } else {
+            // Smoothly collapse remaining conditions inwards
+            nextNodes = recalculateBranchPositions(
+                anchorId,
+                nextNodes,
+                nextEdges,
+            );
+        }
+
+        setNodes(nextNodes);
+        setEdges(nextEdges);
+    };
+
+    const onAddCondition = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const allEdges = getEdges();
+        const inEdge = allEdges.find((edge) => edge.target === id);
+        if (!inEdge) return;
+        const anchorId = inEdge.source;
+        const anchorNode = getNodes().find((n) => n.id === anchorId);
+        if (!anchorNode) return;
+
+        const time = Date.now();
+        const newCondId = `cond_${time}`;
+        const newAddId = `addBtn_${time}`;
+
+        const newCondNode = {
+            id: newCondId,
+            type: "conditionNode",
+            origin: [0.5, 0] as [number, number],
+            position: {
+                x: anchorNode.position.x,
+                y: anchorNode.position.y + 80,
+            },
+            data: { label: "Condition" },
+        };
+        const newAddNode = {
+            id: newAddId,
+            type: "addBtn",
+            origin: [0.5, 0] as [number, number],
+            position: {
+                x: anchorNode.position.x,
+                y: anchorNode.position.y + 80 + Y_STEP,
+            },
+            data: {},
+        };
+
+        let nextNodes = [...getNodes(), newCondNode, newAddNode];
+        let nextEdges = [
+            ...allEdges,
+            {
+                id: `e${anchorId}-${newCondId}`,
+                source: anchorId,
+                target: newCondId,
+                type: "stepButtonEdge",
+                style: { stroke: "#e2e8f0", strokeWidth: 2 },
+            },
+            {
+                id: `e${newCondId}-${newAddId}`,
+                source: newCondId,
+                target: newAddId,
+                type: "buttonEdge",
+                style: { stroke: "#e2e8f0", strokeWidth: 2 },
+            },
+        ];
+
+        nextNodes = recalculateBranchPositions(anchorId, nextNodes, nextEdges);
+        setNodes(nextNodes);
+        setEdges(nextEdges);
+    };
+
+    return (
+        <div
+            className={`wf-node ${selected ? "selected" : ""}`}
+            style={{
+                background: "#f4efff",
+                border: `1.5px solid ${selected ? "#a855f7" : "#dcb8ff"}`,
+                color: "#a855f7",
+                padding: "8px 24px",
+                borderRadius: "999px",
+                fontSize: "13px",
+                fontWeight: 600,
+                boxShadow: selected
+                    ? "0 0 0 2px rgba(168, 85, 247, 0.2)"
+                    : "none",
+                transition: "all 0.2s",
+            }}
+        >
+            <Handle
+                type="target"
+                position={Position.Top}
+                style={{ opacity: 0 }}
+            />
+
+            <div className="wf-node-actions" style={{ top: -38, right: -20 }}>
+                <button
+                    className="wf-node-action-btn"
+                    onClick={onAddCondition}
+                    title="Add Condition"
+                    style={{ color: "#3b82f6" }}
+                >
+                    <AddIcon />
+                </button>
+                <button
+                    className="wf-node-action-btn delete"
+                    onClick={onDeleteCondition}
+                    title="Delete Condition"
+                >
+                    <TrashIcon />
+                </button>
+            </div>
+
+            {data.label}
+            <Handle
+                type="source"
+                position={Position.Bottom}
+                style={{ opacity: 0 }}
+            />
+        </div>
+    );
+}
+
 // Node Component (handles both simple root nodes and complex card nodes)
 function ActionNode({ id, data, selected }: any) {
     const { setNodes, setEdges, getNode, getEdges } = useReactFlow();
@@ -817,7 +1136,7 @@ function ActionNode({ id, data, selected }: any) {
             ...nodeToCopy,
             id: newId,
             position: {
-                x: CENTER_X,
+                x: nodeToCopy.position.x,
                 y: nodeToCopy.position.y + Y_STEP,
             },
             origin: [0.5, 0] as [number, number],
@@ -848,8 +1167,15 @@ function ActionNode({ id, data, selected }: any) {
         });
 
         setNodes((nds) => {
+            const descendantsToShift = [
+                nodeToCopy.id,
+                ...getDescendants(nodeToCopy.id, getEdges()),
+            ];
             const shifted = nds.map((n) => {
-                if (n.position.y > nodeToCopy.position.y) {
+                if (
+                    n.position.y > nodeToCopy.position.y &&
+                    descendantsToShift.includes(n.id)
+                ) {
                     return {
                         ...n,
                         position: { ...n.position, y: n.position.y + Y_STEP },
@@ -869,8 +1195,9 @@ function ActionNode({ id, data, selected }: any) {
         const nodeToDelete = getNode(id);
         if (!nodeToDelete) return;
 
-        const inEdge = getEdges().find((edge) => edge.target === id);
-        const outEdge = getEdges().find((edge) => edge.source === id);
+        const allEdges = getEdges();
+        const inEdge = allEdges.find((edge) => edge.target === id);
+        const outEdge = allEdges.find((edge) => edge.source === id);
 
         setEdges((eds) => {
             let next = eds.filter(
@@ -890,8 +1217,13 @@ function ActionNode({ id, data, selected }: any) {
 
         setNodes((nds) => {
             const filtered = nds.filter((n) => n.id !== id);
+            const descendantsToShift = getDescendants(id, allEdges);
+
             return filtered.map((n) => {
-                if (n.position.y > nodeToDelete.position.y) {
+                if (
+                    n.position.y > nodeToDelete.position.y &&
+                    descendantsToShift.includes(n.id)
+                ) {
                     return {
                         ...n,
                         position: { ...n.position, y: n.position.y - Y_STEP },
@@ -923,7 +1255,6 @@ function ActionNode({ id, data, selected }: any) {
         </div>
     );
 
-    // Render simple root node style
     if (data.isRoot) {
         return (
             <div
@@ -946,7 +1277,6 @@ function ActionNode({ id, data, selected }: any) {
         );
     }
 
-    // Render structured Card node style
     return (
         <div
             className={`wf-node wf-card-node ${selected ? "selected" : ""}`}
@@ -961,16 +1291,13 @@ function ActionNode({ id, data, selected }: any) {
                 position={Position.Top}
                 style={{ opacity: 0 }}
             />
-
             {actionButtons}
-
             <div className="wf-card-title" style={{ color: data.color }}>
                 <span>{data.emoji}</span> {data.name}
             </div>
             <div className="wf-card-body" title={data.text}>
                 {data.text}
             </div>
-
             <Handle
                 type="source"
                 position={Position.Bottom}
@@ -988,25 +1315,22 @@ const AddBtnNode = () => {
                 position={Position.Top}
                 style={{ opacity: 0 }}
             />
-            <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
+            <AddIcon />
         </div>
     );
 };
 
-const customNodeTypes = { addBtn: AddBtnNode, actionNode: ActionNode };
-const customEdgeTypes = { buttonEdge: ButtonEdge };
+const customNodeTypes = {
+    addBtn: AddBtnNode,
+    actionNode: ActionNode,
+    conditionNode: ConditionNode,
+    splitAnchor: SplitAnchorNode,
+};
+const customEdgeTypes = {
+    buttonEdge: ButtonEdge,
+    stepButtonEdge: StepButtonEdge,
+    baseStraight: BaseStraightEdge,
+};
 
 // INITIAL DATA - Centered perfectly using origin: [0.5, 0]
 const INIT_NODES = [
@@ -1120,15 +1444,14 @@ function FlowPageContent() {
     const [openSetting, setOpenSetting] = useState<string | null>(null);
     const [toggles, setToggles] = useState<Record<string, boolean>>({});
 
-    // ReactFlow Controlled State
     const [nodes, setNodes] = useState(INIT_NODES);
     const [edges, setEdges] = useState(INIT_EDGES);
 
-    // Popover & Sidebar State
     const [popover, setPopover] = useState<{
         x: number;
         y: number;
         insertEdgeId?: string;
+        addBtnId?: string;
     } | null>(null);
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
@@ -1141,40 +1464,42 @@ function FlowPageContent() {
         [],
     );
 
-    // LIVE STATE UPDATE HANDLER
     const updateNodeData = useCallback((id: string, newData: any) => {
         setNodes((nds) =>
-            nds.map((n) => {
-                if (n.id === id) {
-                    return { ...n, data: { ...n.data, ...newData } };
-                }
-                return n;
-            }),
+            nds.map((n) =>
+                n.id === id ? { ...n, data: { ...n.data, ...newData } } : n,
+            ),
         );
     }, []);
 
-    const onNodeClick = useCallback((event: any, node: any) => {
-        if (node.id === "add-btn") {
-            const domNode = event.target.closest(".react-flow__node");
-            const rect = domNode.getBoundingClientRect();
-            let x = rect.right + 20;
-            let y = rect.top - 20;
+    const onNodeClick = useCallback(
+        (event: any, node: any) => {
+            if (node.type === "addBtn" || node.type === "splitAnchor") {
+                const domNode = event.target.closest(".react-flow__node");
+                const rect = domNode.getBoundingClientRect();
+                let x = rect.right + 20;
+                let y = rect.top - 20;
+                if (x + 300 > window.innerWidth) x = rect.left - 290;
 
-            if (x + 300 > window.innerWidth) x = rect.left - 290;
-
-            setPopover({ x, y });
-            setSelectedNodeId(null);
-        } else {
-            setPopover(null);
-            setSelectedNodeId(node.id);
-        }
-    }, []);
+                if (node.type === "splitAnchor") {
+                    const inEdge = edges.find((e) => e.target === node.id);
+                    if (inEdge) setPopover({ x, y, insertEdgeId: inEdge.id });
+                } else {
+                    setPopover({ x, y, addBtnId: node.id });
+                }
+                setSelectedNodeId(null);
+            } else {
+                setPopover(null);
+                setSelectedNodeId(node.id);
+            }
+        },
+        [edges],
+    );
 
     const onEdgeAddClick = useCallback((event: any, edgeId: string) => {
         let x = event.clientX + 15;
         let y = event.clientY - 20;
         if (x + 300 > window.innerWidth) x = event.clientX - 290;
-
         setPopover({ x, y, insertEdgeId: edgeId });
         setSelectedNodeId(null);
     }, []);
@@ -1185,7 +1510,186 @@ function FlowPageContent() {
     }, []);
 
     const handleAddNode = (typeDetails: any) => {
-        const newNodeId = `node_${Date.now()}`;
+        const time = Date.now();
+
+        // ─── LOGIC FOR SPLIT PATH ───
+        if (typeDetails.id === "split") {
+            let targetY = 0;
+            let targetX = CENTER_X;
+            let parentNodeId = "";
+            let edgeToReplace = null;
+
+            if (popover?.insertEdgeId) {
+                const edge = edges.find((e) => e.id === popover.insertEdgeId);
+                if (!edge) return;
+                const sourceNode = nodes.find((n) => n.id === edge.source);
+                if (!sourceNode) return;
+
+                targetY = sourceNode.position.y + Y_STEP;
+                targetX = sourceNode.position.x;
+                parentNodeId = edge.source;
+                edgeToReplace = edge;
+            } else if (popover?.addBtnId) {
+                const addBtnNode = nodes.find((n) => n.id === popover.addBtnId);
+                if (!addBtnNode) return;
+                targetY = addBtnNode.position.y;
+                targetX = addBtnNode.position.x;
+                const edgeToAddBtn = edges.find(
+                    (e) => e.target === popover.addBtnId,
+                );
+                parentNodeId = edgeToAddBtn ? edgeToAddBtn.source : "";
+                edgeToReplace = edgeToAddBtn;
+            }
+
+            const splitSpacingX = 180;
+            const anchorId = `splitAnchor_${time}`;
+            const cond1Id = `condA_${time}`;
+            const cond2Id = `condB_${time}`;
+            const add1Id = `addBtnA_${time}`;
+            const add2Id = `addBtnB_${time}`;
+
+            const anchorNode = {
+                id: anchorId,
+                type: "splitAnchor",
+                origin: [0.5, 0.5] as [number, number],
+                position: { x: targetX, y: targetY },
+                data: {},
+            };
+            const cond1Node = {
+                id: cond1Id,
+                type: "conditionNode",
+                origin: [0.5, 0] as [number, number],
+                position: { x: targetX - splitSpacingX, y: targetY + 80 },
+                data: { label: "Condition" },
+            };
+            const cond2Node = {
+                id: cond2Id,
+                type: "conditionNode",
+                origin: [0.5, 0] as [number, number],
+                position: { x: targetX + splitSpacingX, y: targetY + 80 },
+                data: { label: "Condition" },
+            };
+            const add1Node = {
+                id: add1Id,
+                type: "addBtn",
+                origin: [0.5, 0] as [number, number],
+                position: {
+                    x: targetX - splitSpacingX,
+                    y: targetY + 80 + Y_STEP,
+                },
+                data: {},
+            };
+            const add2Node = {
+                id: add2Id,
+                type: "addBtn",
+                origin: [0.5, 0] as [number, number],
+                position: {
+                    x: targetX + splitSpacingX,
+                    y: targetY + 80 + Y_STEP,
+                },
+                data: {},
+            };
+
+            let descendantsToShift: string[] = [];
+            if (popover?.insertEdgeId && edgeToReplace) {
+                descendantsToShift = [
+                    edgeToReplace.target,
+                    ...getDescendants(edgeToReplace.target, edges),
+                ];
+            }
+
+            setNodes((nds) => {
+                let next = popover?.addBtnId
+                    ? nds.filter((n) => n.id !== popover.addBtnId)
+                    : nds;
+                if (descendantsToShift.length > 0) {
+                    next = next.map((n) => {
+                        if (descendantsToShift.includes(n.id)) {
+                            // Sub-tree gently moved down and onto the left-hand condition branch
+                            return {
+                                ...n,
+                                position: {
+                                    ...n.position,
+                                    x: n.position.x - splitSpacingX,
+                                    y: n.position.y + Y_STEP,
+                                },
+                            };
+                        }
+                        return n;
+                    });
+                }
+
+                let insertNodes = [anchorNode, cond1Node, cond2Node, add2Node];
+                if (!popover?.insertEdgeId) {
+                    insertNodes.push(add1Node);
+                }
+                return recalculateBranchPositions(
+                    anchorId,
+                    [...next, ...insertNodes],
+                    edges,
+                );
+            });
+
+            setEdges((eds) => {
+                let next = eds;
+                if (edgeToReplace)
+                    next = next.filter((e) => e.id !== edgeToReplace.id);
+
+                next.push({
+                    id: `e${parentNodeId}-${anchorId}`,
+                    source: parentNodeId,
+                    target: anchorId,
+                    type: "baseStraight",
+                    style: { stroke: "#2e3450", strokeWidth: 2 },
+                });
+                next.push({
+                    id: `e${anchorId}-${cond1Id}`,
+                    source: anchorId,
+                    target: cond1Id,
+                    type: "stepButtonEdge",
+                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                });
+                next.push({
+                    id: `e${anchorId}-${cond2Id}`,
+                    source: anchorId,
+                    target: cond2Id,
+                    type: "stepButtonEdge",
+                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                });
+
+                if (popover?.insertEdgeId && edgeToReplace) {
+                    next.push({
+                        id: `e${cond1Id}-${edgeToReplace.target}`,
+                        source: cond1Id,
+                        target: edgeToReplace.target,
+                        type: "buttonEdge",
+                        style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                    });
+                } else {
+                    next.push({
+                        id: `e${cond1Id}-${add1Id}`,
+                        source: cond1Id,
+                        target: add1Id,
+                        type: "buttonEdge",
+                        style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                    });
+                }
+                next.push({
+                    id: `e${cond2Id}-${add2Id}`,
+                    source: cond2Id,
+                    target: add2Id,
+                    type: "buttonEdge",
+                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                });
+                return next;
+            });
+
+            setPopover(null);
+            return;
+        }
+
+        // ─── LOGIC FOR NORMAL NODE ───
+        const newNodeId = `node_${time}`;
         const newNode = {
             id: newNodeId,
             type: "actionNode",
@@ -1195,27 +1699,32 @@ function FlowPageContent() {
                 emoji: typeDetails.emoji,
                 color: typeDetails.color,
                 bg: typeDetails.bg,
-                text: "", // Empty so placeholder CSS shows
+                text: "",
                 waitForResponse: false,
             },
-            position: { x: CENTER_X, y: 0 }, // y gets updated below
+            position: { x: 0, y: 0 },
         };
 
         if (popover?.insertEdgeId) {
-            // --- 1. INSERT IN THE MIDDLE OF AN EDGE ---
             const edge = edges.find((e) => e.id === popover.insertEdgeId);
             if (!edge) return;
 
-            const targetNode = nodes.find((n) => n.id === edge.target);
-            if (!targetNode) return;
+            const sourceNode = nodes.find((n) => n.id === edge.source);
+            if (!sourceNode) return;
 
-            const insertY = targetNode.position.y;
-            newNode.position.y = insertY;
+            const insertY = sourceNode.position.y + Y_STEP;
+            newNode.position = { x: sourceNode.position.x, y: insertY };
+
+            // Shift down the target node and ALL of its downstream descendants natively
+            const descendantsToShift = [
+                edge.target,
+                ...getDescendants(edge.target, edges),
+            ];
 
             setNodes((nds) =>
                 nds
                     .map((n) => {
-                        if (n.position.y >= insertY) {
+                        if (descendantsToShift.includes(n.id)) {
                             return {
                                 ...n,
                                 position: {
@@ -1247,24 +1756,28 @@ function FlowPageContent() {
                 });
                 return next;
             });
-        } else {
-            // --- 2. ADD TO THE VERY END ---
-            const addBtnNode = nodes.find((n) => n.id === "add-btn");
-            const edgeToAddBtn = edges.find((e) => e.target === "add-btn");
+        } else if (popover?.addBtnId) {
+            const addBtnNode = nodes.find((n) => n.id === popover.addBtnId);
+            const edgeToAddBtn = edges.find(
+                (e) => e.target === popover.addBtnId,
+            );
             const sourceNodeId = edgeToAddBtn ? edgeToAddBtn.source : null;
 
             if (!addBtnNode) return;
 
-            newNode.position.y = addBtnNode.position.y;
+            newNode.position = {
+                x: addBtnNode.position.x,
+                y: addBtnNode.position.y,
+            };
             const newAddBtnPos = {
-                x: CENTER_X,
+                x: addBtnNode.position.x,
                 y: addBtnNode.position.y + Y_STEP,
             };
 
             setNodes((nds) =>
                 nds
                     .map((n) =>
-                        n.id === "add-btn"
+                        n.id === popover.addBtnId
                             ? { ...n, position: newAddBtnPos }
                             : n,
                     )
@@ -1286,9 +1799,9 @@ function FlowPageContent() {
                             style: { stroke: "#2e3450", strokeWidth: 2 },
                         },
                         {
-                            id: `e${newNodeId}-add-btn`,
+                            id: `e${newNodeId}-${popover.addBtnId}`,
                             source: newNodeId,
-                            target: "add-btn",
+                            target: popover.addBtnId,
                             type: "buttonEdge",
                             style: { stroke: "#2e3450", strokeWidth: 2 },
                         },
@@ -1298,7 +1811,7 @@ function FlowPageContent() {
         }
 
         setPopover(null);
-        setSelectedNodeId(newNodeId); // Auto-open settings
+        setSelectedNodeId(newNodeId);
     };
 
     const toggle = (key: string, def = false) =>
@@ -1424,8 +1937,7 @@ function FlowPageContent() {
                     </div>
                     <div className="wf-spacer" />
                     <div className="wf-topbar-saved">
-                        <div className="wf-topbar-saved-dot" />
-                        Saved 23:35
+                        <div className="wf-topbar-saved-dot" /> Saved 23:35
                     </div>
                     <button className="wf-icon-btn">
                         <Ic
@@ -1733,7 +2245,6 @@ function FlowPageContent() {
     );
 }
 
-// Wrap export in Provider so Custom Nodes can use ReactFlow hooks
 export default function FlowPage() {
     return (
         <ReactFlowProvider>
