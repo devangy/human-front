@@ -226,6 +226,9 @@ const styles = `
   .wf-popover-list { max-height: 340px; overflow-y: auto; padding: 8px; }
   .wf-popover-list::-webkit-scrollbar { width: 4px; }
   .wf-popover-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .wf-popover-section-label { padding: 12px 14px 4px; font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
   .wf-popover-item { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
   .wf-popover-item:hover { background: var(--bg3); }
   .wf-popover-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -452,6 +455,35 @@ const CloseIcon = () => (
 );
 
 // Menu Icons
+const ReturnNodeIcon = () => (
+    <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <polyline points="9 14 4 9 9 4"></polyline>
+        <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+    </svg>
+);
+const ActionBoltIcon = () => (
+    <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+    </svg>
+);
 const ConversationIcon = () => (
     <svg
         width="16"
@@ -460,6 +492,8 @@ const ConversationIcon = () => (
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
     >
         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
     </svg>
@@ -472,6 +506,8 @@ const MessageIcon = () => (
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
     >
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
@@ -484,6 +520,8 @@ const TriggerIcon = () => (
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
     >
         <path d="M12 22V8M5 15l7-7 7 7" />
     </svg>
@@ -496,6 +534,8 @@ const SplitIcon = () => (
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
     >
         <path d="M6 3v12a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3M6 3l-3 3m3-3 3 3M18 3l-3 3m3-3 3 3" />
     </svg>
@@ -508,14 +548,51 @@ const JumpIcon = () => (
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
     >
         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
         <path d="M3 3v5h5" />
     </svg>
 );
+const TransferIcon = () => (
+    <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <polyline points="16 3 21 8 16 13"></polyline>
+        <line x1="21" y1="8" x2="3" y2="8"></line>
+        <polyline points="8 21 3 16 8 11"></polyline>
+        <line x1="3" y1="16" x2="21" y2="16"></line>
+    </svg>
+);
+const BookingIcon = () => (
+    <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+);
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
-const NODE_TYPES_MENU = [
+
+const FLOW_NODES_MENU = [
     {
         id: "conversation",
         label: "Conversation",
@@ -560,6 +637,72 @@ const NODE_TYPES_MENU = [
         bg: "rgba(56, 189, 248, 0.15)",
         color: "#38bdf8",
         emoji: "⤵️",
+    },
+    {
+        id: "end",
+        label: "End",
+        desc: "This is the end node",
+        icon: <EndCallIcon />,
+        bg: "rgba(239, 68, 68, 0.1)",
+        color: "#ef4444",
+        emoji: "🛑",
+    },
+    {
+        id: "return",
+        label: "Return to Main Flow",
+        desc: "This is the return to main flow node",
+        icon: <ReturnNodeIcon />,
+        bg: "rgba(56, 189, 248, 0.1)",
+        color: "#38bdf8",
+        emoji: "↩️",
+    },
+];
+
+const ACTION_NODES_MENU = [
+    {
+        id: "action",
+        label: "Action",
+        desc: "This is the action node",
+        icon: <ActionBoltIcon />,
+        bg: "rgba(59, 130, 246, 0.1)",
+        color: "#3b82f6",
+        emoji: "⚡",
+    },
+    {
+        id: "sms",
+        label: "Send During-Call SMS",
+        desc: "Send an SMS during a live call",
+        icon: <MessageIcon />,
+        bg: "rgba(34, 197, 94, 0.1)",
+        color: "#22c55e",
+        emoji: "💬",
+    },
+    {
+        id: "whatsapp",
+        label: "Send During-Call WhatsApp",
+        desc: "Send a WhatsApp message during a live call",
+        icon: <ConversationIcon />,
+        bg: "rgba(34, 197, 94, 0.1)",
+        color: "#22c55e",
+        emoji: "📱",
+    },
+    {
+        id: "transfer",
+        label: "Transfer",
+        desc: "Transfer the call to a human agent",
+        icon: <TransferIcon />,
+        bg: "rgba(234, 179, 8, 0.1)",
+        color: "#eab308", // Amber/Yellow
+        emoji: "🔁",
+    },
+    {
+        id: "booking",
+        label: "Booking",
+        desc: "Book an appointment",
+        icon: <BookingIcon />,
+        bg: "rgba(249, 115, 22, 0.1)",
+        color: "#f97316", // Orange/Peach
+        emoji: "📅",
     },
 ];
 
@@ -721,8 +864,7 @@ function ActionNode({ id, data, selected }: any) {
 
     const onDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
-        // Prevent deleting the very first required node
-        if (id === "1") return;
+        if (data.isRoot) return;
 
         const nodeToDelete = getNode(id);
         if (!nodeToDelete) return;
@@ -1191,7 +1333,35 @@ function FlowPageContent() {
                             />
                         </div>
                         <div className="wf-popover-list">
-                            {NODE_TYPES_MENU.map((nt) => (
+                            {FLOW_NODES_MENU.map((nt) => (
+                                <div
+                                    key={nt.id}
+                                    className="wf-popover-item"
+                                    onClick={() => handleAddNode(nt)}
+                                >
+                                    <div
+                                        className="wf-popover-icon"
+                                        style={{
+                                            background: nt.bg,
+                                            color: nt.color,
+                                        }}
+                                    >
+                                        {nt.icon}
+                                    </div>
+                                    <div className="wf-popover-text">
+                                        <span className="wf-popover-title">
+                                            {nt.label}
+                                        </span>
+                                        <span className="wf-popover-desc">
+                                            {nt.desc}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="wf-popover-section-label">
+                                Actions
+                            </div>
+                            {ACTION_NODES_MENU.map((nt) => (
                                 <div
                                     key={nt.id}
                                     className="wf-popover-item"
