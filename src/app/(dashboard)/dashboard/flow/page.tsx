@@ -25,6 +25,7 @@ import {
     EdgeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Phone } from "lucide-react";
 
 // ─── Constants & Layout Engine ───────────────────────────────────────────────
 const CENTER_X = 300;
@@ -34,14 +35,13 @@ const START_Y = 80;
 
 // Context to pass edge click events down to the custom edges
 const FlowActionContext = createContext<any>(null);
-
 // Utility: Find all children, grandchildren, etc., of a specific node
 const getDescendants = (nodeId: string, edges: any[]): string[] => {
     const outEdges = edges.filter((e) => e.source === nodeId);
     const children = outEdges.map((e) => e.target);
     return children.reduce(
         (acc, child) => [...acc, child, ...getDescendants(child, edges)],
-        children,
+        [],
     );
 };
 
@@ -55,7 +55,7 @@ const recalculateBranchPositions = (
     const conditionIds = outEdges.map((e) => e.target);
 
     const N = conditionIds.length;
-    const SPACING_X = 280; // Distance between branches
+    const SPACING_X = 360; // Wide, spacious horizontal gap between branches
 
     const anchorNode = currentNodes.find((n) => n.id === anchorId);
     if (!anchorNode) return currentNodes;
@@ -126,8 +126,10 @@ const styles = `
   .wf-topbar-saved-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px #4ade80; }
   .wf-icon-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.12s; }
   .wf-icon-btn:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
-  .wf-btn-test { display: flex; align-items: center; gap: 8px; padding: 0 18px; height: 36px; border-radius: 8px; border: none; background: linear-gradient(135deg, var(--accent), #5b3fd4); color: white; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; box-shadow: 0 0 14px var(--accent-glow); transition: all 0.2s; }
-  .wf-btn-test:hover { box-shadow: 0 0 22px rgba(124,77,255,0.5); transform: translateY(-1px); }
+
+  .wf-btn-test { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; height: 36px; border-radius: 8px; border: 1px solid #22d3ee55; background: linear-gradient(90deg, #22d3ee22, #22d3ee11); color: var(--cyan); font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+  .wf-btn-test:hover { background: linear-gradient(90deg, #22d3ee33, #22d3ee18); box-shadow: 0 0 16px rgba(34,211,238,0.2); transform: translateY(-1px); }
+
   .wf-btn-deploy { padding: 0 18px; height: 36px; border-radius: 8px; border: 1px solid var(--border2); background: var(--bg3); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; }
   .wf-btn-deploy:hover { color: var(--text); border-color: var(--border); }
 
@@ -146,6 +148,36 @@ const styles = `
   /* ── React Flow ──────────────────────────────── */
   .wf-flow-wrap { flex: 1; overflow: hidden; }
   .wf-flow-wrap .react-flow { background-color: var(--bg) !important; background-image: radial-gradient(circle, #252a3d 1px, transparent 1px) !important; background-size: 24px 24px !important; }
+
+  /* Remove Watermark */
+  .react-flow__panel.react-flow__attribution { display: none !important; }
+
+  /* Themed Controls */
+  .wf-flow-wrap .react-flow__controls {
+      background: var(--bg2) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+      overflow: hidden;
+  }
+  .wf-flow-wrap .react-flow__controls-button {
+      background: var(--bg2) !important;
+      border: none !important;
+      border-bottom: 1px solid var(--border) !important;
+      color: var(--text2) !important;
+      fill: var(--text2) !important;
+      transition: all 0.15s ease;
+  }
+  .wf-flow-wrap .react-flow__controls-button:hover {
+      background: var(--bg3) !important;
+      fill: var(--text) !important;
+  }
+  .wf-flow-wrap .react-flow__controls-button:last-child {
+      border-bottom: none !important;
+  }
+
+  .wf-flow-wrap .react-flow__minimap { background: var(--bg2) !important; border: 1px solid var(--border) !important; border-radius: 8px !important; }
+  .wf-flow-wrap .react-flow__minimap-mask { fill: rgba(15,17,23,0.7) !important; }
 
   /* ── Custom Node styling ──── */
   .wf-node { position: relative; transition: box-shadow 0.2s; }
@@ -226,17 +258,19 @@ const styles = `
   .gs-sub-row:last-child { border-bottom: none; }
   .gs-sub-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent2); }
 
-  .gs-footer { border-top: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; gap: 16px; background: var(--bg2); flex-shrink: 0; }
-  .gs-footer-meta { display: flex; align-items: center; justify-content: space-between; }
-  .gs-saved { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text3); }
-  .gs-v-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 4px; border: 1px solid var(--border2); color: var(--text2); }
-  .gs-btn-row { display: flex; gap: 12px; }
-  .gs-btn-preview { flex: 1; height: 42px; border-radius: 8px; border: 1px solid var(--border2); background: var(--bg3); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-  .gs-btn-preview:hover { border-color: var(--accent); color: var(--accent2); }
-  .gs-btn-publish { flex: 1; height: 42px; border-radius: 8px; border: none; background: linear-gradient(135deg, var(--accent), #5b3fd4); color: white; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; box-shadow: 0 0 16px var(--accent-glow); transition: all 0.2s; }
-  .gs-btn-publish:hover { box-shadow: 0 0 24px rgba(124,77,255,0.45); transform: translateY(-1px); }
-  .gs-btn-test { width: 100%; height: 46px; border-radius: 8px; border: 1px solid #22d3ee55; background: linear-gradient(90deg, #22d3ee22, #22d3ee11); color: var(--cyan); font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
-  .gs-btn-test:hover { background: linear-gradient(90deg, #22d3ee33, #22d3ee18); box-shadow: 0 0 16px rgba(34,211,238,0.2); }
+  /* Advanced General Settings Form Elements */
+  .gs-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .gs-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .gs-field-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text2); }
+  .gs-field-label i { font-style: normal; color: var(--text3); font-size: 11px; cursor: help; border: 1px solid var(--border2); border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center; }
+  .gs-select { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: 8px; padding: 10px 12px; color: var(--text); font-size: 13px; outline: none; appearance: none; cursor: pointer; }
+  .gs-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+  .gs-select-wrap { position: relative; }
+  .gs-select-wrap::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; font-size: 12px; }
+  .gs-textarea { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: 8px; padding: 12px; color: var(--text); font-size: 13px; outline: none; min-height: 140px; resize: vertical; line-height: 1.5; font-family: inherit; }
+  .gs-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+  .gs-btn-add { width: 100%; padding: 12px; border-radius: 8px; border: 1px dashed var(--border2); background: transparent; color: var(--accent2); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .gs-btn-add:hover { border-color: var(--accent); background: rgba(124,77,255,0.05); }
 
   /* Node Settings Overlay Panel */
   .ns-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -443,18 +477,21 @@ const PlayIcon = () => (
         <polygon points="5 3 19 12 5 21 5 3" />
     </svg>
 );
-const ClockIcon = () => (
+const ExpandIcon = () => (
     <svg
-        width="12"
-        height="12"
+        width="14"
+        height="14"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="2"
         strokeLinecap="round"
+        strokeLinejoin="round"
     >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <polyline points="9 21 3 21 3 15"></polyline>
+        <line x1="21" y1="3" x2="14" y2="10"></line>
+        <line x1="3" y1="21" x2="10" y2="14"></line>
     </svg>
 );
 
@@ -783,10 +820,8 @@ const SETTINGS = [
 ];
 
 const SUBS = {
-    general: [
-        { label: "Name", value: "My Inbound Assistant" },
-        { label: "ID", value: "AG-8842-X" },
-    ],
+    // The general settings content has a specialized layout built in the component now.
+    general: [],
     voice: [
         { label: "TTS Enabled", toggle: true, on: true },
         { label: "Voice Model", value: "en_us_standard" },
@@ -848,7 +883,9 @@ function ButtonEdge({
         target.startsWith("addBtn") ||
         target === "add-btn" ||
         source === "1" ||
-        source.startsWith("splitAnchor");
+        source === "2" ||
+        source.startsWith("splitAnchor") ||
+        target.startsWith("splitAnchor");
 
     return (
         <>
@@ -897,13 +934,13 @@ function StepButtonEdge({
     style,
     markerEnd,
 }: EdgeProps) {
-    // centerY creates the sharp horizontal drop
+    // centerY creates the sharp horizontal drop perfectly halfway creating a clean T-junction
     const [edgePath] = getSmoothStepPath({
         sourceX,
         sourceY,
         targetX,
         targetY,
-        centerY: sourceY + 20,
+        centerY: sourceY + 40,
         borderRadius: 16,
     });
     return (
@@ -913,13 +950,92 @@ function StepButtonEdge({
 
 // Invisible visual anchor connecting the main flow to the branching horizontal lines
 function SplitAnchorNode({ id }: any) {
+    const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
+
+    // Clicking the trash on the split anchor recursively deletes the entire branch safely
+    const onDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const allEdges = getEdges();
+        const descendants = getDescendants(id, allEdges);
+
+        setNodes((nds) =>
+            nds.filter((n) => n.id !== id && !descendants.includes(n.id)),
+        );
+        setEdges((eds) =>
+            eds.filter(
+                (edge) =>
+                    edge.source !== id &&
+                    edge.target !== id &&
+                    !descendants.includes(edge.source) &&
+                    !descendants.includes(edge.target),
+            ),
+        );
+
+        // Spawn a fresh + button on the parent to prevent dead-ending the flow
+        const inEdge = allEdges.find((edge) => edge.target === id);
+        if (inEdge) {
+            const parentId = inEdge.source;
+            const parentNode = getNodes().find((n) => n.id === parentId);
+            if (parentNode) {
+                const addBtnId = `addBtn_${Date.now()}`;
+                const addBtnNode = {
+                    id: addBtnId,
+                    type: "addBtn",
+                    origin: [0.5, 0] as [number, number],
+                    position: {
+                        x: parentNode.position.x,
+                        y: parentNode.position.y + Y_STEP,
+                    },
+                    data: {},
+                };
+                setNodes((nds) => {
+                    const remaining = nds.filter(
+                        (n) => n.id !== id && !descendants.includes(n.id),
+                    );
+                    return [...remaining, addBtnNode];
+                });
+                setEdges((eds) => {
+                    const remaining = eds.filter(
+                        (edge) =>
+                            edge.source !== id &&
+                            edge.target !== id &&
+                            !descendants.includes(edge.source) &&
+                            !descendants.includes(edge.target),
+                    );
+                    remaining.push({
+                        id: `e${parentId}-${addBtnId}`,
+                        source: parentId,
+                        target: addBtnId,
+                        type: "buttonEdge",
+                        style: { stroke: "#2e3450", strokeWidth: 2 },
+                    });
+                    return remaining;
+                });
+            }
+        }
+    };
+
     return (
-        <div style={{ width: 1, height: 1, position: "relative" }}>
+        <div
+            className="wf-node"
+            style={{ width: 1, height: 1, position: "relative" }}
+        >
             <Handle
                 type="target"
                 position={Position.Top}
                 style={{ opacity: 0 }}
             />
+
+            <div className="wf-node-actions" style={{ top: -36, right: -15 }}>
+                <button
+                    className="wf-node-action-btn delete"
+                    onClick={onDelete}
+                    title="Delete Split"
+                >
+                    <TrashIcon />
+                </button>
+            </div>
+
             {/* The distinct central square plus button acting as the split point */}
             <div
                 className="wf-edge-add-btn nodrag nopan react-flow__node-splitAnchor"
@@ -1167,10 +1283,10 @@ function ActionNode({ id, data, selected }: any) {
         });
 
         setNodes((nds) => {
-            const descendantsToShift = [
+            const descendantsToShift = getDescendants(
                 nodeToCopy.id,
-                ...getDescendants(nodeToCopy.id, getEdges()),
-            ];
+                getEdges(),
+            );
             const shifted = nds.map((n) => {
                 if (
                     n.position.y > nodeToCopy.position.y &&
@@ -1234,7 +1350,10 @@ function ActionNode({ id, data, selected }: any) {
         });
     };
 
-    const actionButtons = (
+    // Determine if actions should be shown (hide for nodes 1, 2, and 3)
+    const showActions = !["1", "2", "3"].includes(id);
+
+    const actionButtons = showActions && (
         <div className="wf-node-actions">
             <button
                 className="wf-node-action-btn"
@@ -1243,15 +1362,13 @@ function ActionNode({ id, data, selected }: any) {
             >
                 <CopyIcon />
             </button>
-            {id !== "1" && (
-                <button
-                    className="wf-node-action-btn delete"
-                    onClick={onDelete}
-                    title="Delete Node"
-                >
-                    <TrashIcon />
-                </button>
-            )}
+            <button
+                className="wf-node-action-btn delete"
+                onClick={onDelete}
+                title="Delete Node"
+            >
+                <TrashIcon />
+            </button>
         </div>
     );
 
@@ -1332,7 +1449,7 @@ const customEdgeTypes = {
     baseStraight: BaseStraightEdge,
 };
 
-// INITIAL DATA - Centered perfectly using origin: [0.5, 0]
+// INITIAL DATA
 const INIT_NODES = [
     {
         id: "1",
@@ -1441,7 +1558,7 @@ const INIT_EDGES = [
 function FlowPageContent() {
     const [tabs, setTabs] = useState(TABS_INIT);
     const [activeTab, setActiveTab] = useState("main");
-    const [openSetting, setOpenSetting] = useState<string | null>(null);
+    const [openSetting, setOpenSetting] = useState<string | null>("general"); // Open General by default
     const [toggles, setToggles] = useState<Record<string, boolean>>({});
 
     const [nodes, setNodes] = useState(INIT_NODES);
@@ -1598,20 +1715,73 @@ function FlowPageContent() {
                 ];
             }
 
+            let nextEdges = edges;
+            if (edgeToReplace)
+                nextEdges = nextEdges.filter((e) => e.id !== edgeToReplace.id);
+
+            nextEdges.push({
+                id: `e${parentNodeId}-${anchorId}`,
+                source: parentNodeId,
+                target: anchorId,
+                type: "baseStraight",
+                style: { stroke: "#2e3450", strokeWidth: 2 },
+            });
+            nextEdges.push({
+                id: `e${anchorId}-${cond1Id}`,
+                source: anchorId,
+                target: cond1Id,
+                type: "stepButtonEdge",
+                style: { stroke: "#e2e8f0", strokeWidth: 2 },
+            });
+            nextEdges.push({
+                id: `e${anchorId}-${cond2Id}`,
+                source: anchorId,
+                target: cond2Id,
+                type: "stepButtonEdge",
+                style: { stroke: "#e2e8f0", strokeWidth: 2 },
+            });
+
+            if (popover?.insertEdgeId && edgeToReplace) {
+                nextEdges.push({
+                    id: `e${cond1Id}-${edgeToReplace.target}`,
+                    source: cond1Id,
+                    target: edgeToReplace.target,
+                    type: "buttonEdge",
+                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                });
+            } else {
+                nextEdges.push({
+                    id: `e${cond1Id}-${add1Id}`,
+                    source: cond1Id,
+                    target: add1Id,
+                    type: "buttonEdge",
+                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                });
+            }
+            nextEdges.push({
+                id: `e${cond2Id}-${add2Id}`,
+                source: cond2Id,
+                target: add2Id,
+                type: "buttonEdge",
+                style: { stroke: "#e2e8f0", strokeWidth: 2 },
+            });
+
             setNodes((nds) => {
                 let next = popover?.addBtnId
                     ? nds.filter((n) => n.id !== popover.addBtnId)
                     : nds;
+
                 if (descendantsToShift.length > 0) {
                     next = next.map((n) => {
                         if (descendantsToShift.includes(n.id)) {
-                            // Sub-tree gently moved down and onto the left-hand condition branch
+                            // Sub-tree gently moved down and safely onto the left-hand condition branch
+                            const shiftY = 80 + Y_STEP;
                             return {
                                 ...n,
                                 position: {
                                     ...n.position,
                                     x: n.position.x - splitSpacingX,
-                                    y: n.position.y + Y_STEP,
+                                    y: n.position.y + shiftY,
                                 },
                             };
                         }
@@ -1626,64 +1796,11 @@ function FlowPageContent() {
                 return recalculateBranchPositions(
                     anchorId,
                     [...next, ...insertNodes],
-                    edges,
+                    nextEdges,
                 );
             });
 
-            setEdges((eds) => {
-                let next = eds;
-                if (edgeToReplace)
-                    next = next.filter((e) => e.id !== edgeToReplace.id);
-
-                next.push({
-                    id: `e${parentNodeId}-${anchorId}`,
-                    source: parentNodeId,
-                    target: anchorId,
-                    type: "baseStraight",
-                    style: { stroke: "#2e3450", strokeWidth: 2 },
-                });
-                next.push({
-                    id: `e${anchorId}-${cond1Id}`,
-                    source: anchorId,
-                    target: cond1Id,
-                    type: "stepButtonEdge",
-                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
-                });
-                next.push({
-                    id: `e${anchorId}-${cond2Id}`,
-                    source: anchorId,
-                    target: cond2Id,
-                    type: "stepButtonEdge",
-                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
-                });
-
-                if (popover?.insertEdgeId && edgeToReplace) {
-                    next.push({
-                        id: `e${cond1Id}-${edgeToReplace.target}`,
-                        source: cond1Id,
-                        target: edgeToReplace.target,
-                        type: "buttonEdge",
-                        style: { stroke: "#e2e8f0", strokeWidth: 2 },
-                    });
-                } else {
-                    next.push({
-                        id: `e${cond1Id}-${add1Id}`,
-                        source: cond1Id,
-                        target: add1Id,
-                        type: "buttonEdge",
-                        style: { stroke: "#e2e8f0", strokeWidth: 2 },
-                    });
-                }
-                next.push({
-                    id: `e${cond2Id}-${add2Id}`,
-                    source: cond2Id,
-                    target: add2Id,
-                    type: "buttonEdge",
-                    style: { stroke: "#e2e8f0", strokeWidth: 2 },
-                });
-                return next;
-            });
-
+            setEdges(nextEdges);
             setPopover(null);
             return;
         }
@@ -1827,6 +1944,39 @@ function FlowPageContent() {
     const edgeTypes = useMemo(() => customEdgeTypes, []);
     const selectedNode = nodes.find((n) => n.id === selectedNodeId);
 
+    const { getNodes, getEdges } = useReactFlow();
+
+    const TestFlowBtn = useCallback(async () => {
+        const flowData = {
+            nodes: getNodes(),
+            edges: getEdges(),
+        };
+
+        console.log("React Flow JSON:", flowData);
+
+        try {
+            const response = await fetch("/api/test-flow", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // 'Authorization': `Bearer YOUR_TOKEN_HERE` // Add if auth is needed
+                },
+                body: JSON.stringify(flowData),
+            });
+
+            if (!response.ok) {
+                throw new Error(
+                    `HTTP error TestFlowBtn! status: ${response.status}`,
+                );
+            }
+
+            const result = await response.json();
+            console.log("API Call Successful:", result);
+        } catch (error) {
+            console.error("API Call Failed:", error);
+        }
+    }, [getNodes, getEdges]);
+
     return (
         <FlowActionContext.Provider value={{ onEdgeAddClick }}>
             <div className="wf-root">
@@ -1951,8 +2101,11 @@ function FlowPageContent() {
                     >
                         <SettingsIcon />
                     </button>
-                    <button className="wf-btn-test">
-                        <PlayIcon /> Test
+                    <button
+                        onClick={() => TestFlowBtn()}
+                        className="wf-btn-test"
+                    >
+                        <PlayIcon /> Test Voice Agent
                     </button>
                     <button className="wf-btn-deploy">Deploy</button>
                 </header>
@@ -2037,6 +2190,7 @@ function FlowPageContent() {
                                 onMoveStart={onPaneClick}
                                 nodesDraggable={false}
                                 fitView
+                                proOptions={{ hideAttribution: true }}
                                 style={{ width: "100%", height: "100%" }}
                             >
                                 <Background color="#252a3d" gap={24} size={1} />
@@ -2084,7 +2238,7 @@ function FlowPageContent() {
                                 </div>
                                 <div className="ns-field">
                                     <label>
-                                        Exact Message <i>i</i>
+                                        Exact Message <i>?</i>
                                     </label>
                                     <textarea
                                         className="ns-textarea"
@@ -2102,7 +2256,7 @@ function FlowPageContent() {
                                 </div>
                                 <div className="ns-toggle-row">
                                     <label>
-                                        Wait for user to respond <i>i</i>
+                                        Wait for user to respond <i>?</i>
                                     </label>
                                     <button
                                         className={`gs-toggle ${selectedNode.data.waitForResponse ? "on" : ""}`}
@@ -2157,7 +2311,154 @@ function FlowPageContent() {
                                                         ›
                                                     </span>
                                                 </button>
-                                                {open && (
+
+                                                {/* Advanced Layout specifically for "General" matching the image */}
+                                                {open && s.id === "general" && (
+                                                    <div
+                                                        className="gs-sub"
+                                                        style={{
+                                                            background:
+                                                                "transparent",
+                                                            padding:
+                                                                "4px 0 16px",
+                                                            margin: 0,
+                                                        }}
+                                                    >
+                                                        <div className="gs-grid-2">
+                                                            <div
+                                                                className="gs-field"
+                                                                style={{
+                                                                    marginBottom: 0,
+                                                                }}
+                                                            >
+                                                                <label className="gs-field-label">
+                                                                    Language{" "}
+                                                                    <i>?</i>
+                                                                </label>
+                                                                <div className="gs-select-wrap">
+                                                                    <select className="gs-select">
+                                                                        <option>
+                                                                            🇺🇸
+                                                                            English
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                className="gs-field"
+                                                                style={{
+                                                                    marginBottom: 0,
+                                                                }}
+                                                            >
+                                                                <label className="gs-field-label">
+                                                                    AI Model{" "}
+                                                                    <i>?</i>
+                                                                </label>
+                                                                <div className="gs-select-wrap">
+                                                                    <select className="gs-select">
+                                                                        <option>
+                                                                            Synthflow
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="gs-field">
+                                                            <label className="gs-field-label">
+                                                                Timezone{" "}
+                                                                <i>?</i>
+                                                            </label>
+                                                            <div className="gs-select-wrap">
+                                                                <select className="gs-select">
+                                                                    <option>
+                                                                        Europe/Berlin
+                                                                    </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div className="gs-field">
+                                                            <label
+                                                                className="gs-field-label"
+                                                                style={{
+                                                                    justifyContent:
+                                                                        "space-between",
+                                                                    width: "100%",
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    style={{
+                                                                        display:
+                                                                            "flex",
+                                                                        alignItems:
+                                                                            "center",
+                                                                        gap: "6px",
+                                                                    }}
+                                                                >
+                                                                    Global
+                                                                    Prompt{" "}
+                                                                    <i>?</i>
+                                                                </div>
+                                                                <button
+                                                                    style={{
+                                                                        background:
+                                                                            "none",
+                                                                        border: "none",
+                                                                        color: "var(--text3)",
+                                                                        cursor: "pointer",
+                                                                        display:
+                                                                            "flex",
+                                                                        alignItems:
+                                                                            "center",
+                                                                        padding:
+                                                                            "4px",
+                                                                    }}
+                                                                >
+                                                                    <ExpandIcon />
+                                                                </button>
+                                                            </label>
+                                                            <textarea
+                                                                className="gs-textarea"
+                                                                defaultValue={
+                                                                    "You are a friendly Starbucks host.\nYour sole task right now is to politely ask for the customer's name and ask how we can help them today.\n\nKeep it brief. For example: \"May I..."
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <div
+                                                            className="gs-field"
+                                                            style={{
+                                                                marginBottom: 0,
+                                                            }}
+                                                        >
+                                                            <label className="gs-field-label">
+                                                                Special Cases{" "}
+                                                                <i>?</i>
+                                                            </label>
+                                                            <p
+                                                                style={{
+                                                                    fontSize:
+                                                                        "13px",
+                                                                    color: "var(--text3)",
+                                                                    marginBottom:
+                                                                        "10px",
+                                                                    lineHeight: 1.4,
+                                                                }}
+                                                            >
+                                                                Define how the
+                                                                agent should
+                                                                respond in
+                                                                specific edge
+                                                                cases.
+                                                            </p>
+                                                            <button className="gs-btn-add">
+                                                                + Add Special
+                                                                Case
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Standard Mapping for other Global Settings */}
+                                                {open && s.id !== "general" && (
                                                     <div className="gs-sub">
                                                         {SUBS[
                                                             s.id as keyof typeof SUBS
@@ -2216,26 +2517,6 @@ function FlowPageContent() {
                                         );
                                     })}
                                 </div>
-                            </div>
-
-                            <div className="gs-footer">
-                                <div className="gs-footer-meta">
-                                    <span className="gs-saved">
-                                        <ClockIcon /> Saved 23:22
-                                    </span>
-                                    <span className="gs-v-badge">V2</span>
-                                </div>
-                                <div className="gs-btn-row">
-                                    <button className="gs-btn-preview">
-                                        Preview
-                                    </button>
-                                    <button className="gs-btn-publish">
-                                        Publish
-                                    </button>
-                                </div>
-                                <button className="gs-btn-test">
-                                    <PlayIcon /> Test Voice Agent
-                                </button>
                             </div>
                         </aside>
                     )}
