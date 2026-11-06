@@ -25,7 +25,34 @@ import {
     EdgeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Phone } from "lucide-react";
+import {
+    Settings,
+    Activity,
+    Phone,
+    PhoneOff,
+    BookOpen,
+    Shield,
+    SlidersVertical,
+    History,
+    Play,
+    Maximize2,
+    Copy,
+    Trash2,
+    X,
+    Plus,
+    CornerUpLeft,
+    Zap,
+    MessageCircle,
+    MessageSquare,
+    ArrowUp,
+    Split,
+    Shuffle,
+    ArrowLeftRight,
+    Calendar,
+    SquarePen,
+    TriangleAlert,
+    Home,
+} from "lucide-react";
 
 // ─── Constants & Layout Engine ───────────────────────────────────────────────
 const CENTER_X = 300;
@@ -322,442 +349,66 @@ const styles = `
   .wf-popover-desc { font-size: 12px; color: var(--text3); line-height: 1.3; }
 `;
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
-const Ic = ({
-    d,
-    size = 14,
-    fill = "none",
-    stroke = "currentColor",
-    sw = 1.8,
-}: any) => (
-    <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill={fill}
-        stroke={stroke}
-        strokeWidth={sw}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d={d} />
-    </svg>
-);
-const SettingsIcon = () => (
-    <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-);
-const VoiceIcon = () => (
-    <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
-);
-const PhoneIcon = () => (
-    <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-    </svg>
-);
-const EndCallIcon = () => (
-    <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2C9.67 20.82 3.18 14.33 2.08 6.18A2 2 0 0 1 4.11 4h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 11.9M23 1 1 23" />
-    </svg>
-);
-const KnowledgeIcon = () => (
-    <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-    </svg>
-);
-const ShieldIcon = () => (
-    <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-);
-const SlidersIcon = () => (
-    <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <line x1="4" y1="21" x2="4" y2="14" />
-        <line x1="4" y1="10" x2="4" y2="3" />
-        <line x1="12" y1="21" x2="12" y2="12" />
-        <line x1="12" y1="8" x2="12" y2="3" />
-        <line x1="20" y1="21" x2="20" y2="16" />
-        <line x1="20" y1="12" x2="20" y2="3" />
-        <line x1="1" y1="14" x2="7" y2="14" />
-        <line x1="9" y1="8" x2="15" y2="8" />
-        <line x1="17" y1="16" x2="23" y2="16" />
-    </svg>
-);
-const HistoryIcon = () => (
-    <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polyline points="1 4 1 10 7 10" />
-        <path d="M3.51 15a9 9 0 1 0 .49-3.67" />
-    </svg>
-);
-const PlayIcon = () => (
-    <svg
-        width="13"
-        height="13"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        stroke="none"
-    >
-        <polygon points="5 3 19 12 5 21 5 3" />
-    </svg>
-);
-const ExpandIcon = () => (
-    <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polyline points="15 3 21 3 21 9"></polyline>
-        <polyline points="9 21 3 21 3 15"></polyline>
-        <line x1="21" y1="3" x2="14" y2="10"></line>
-        <line x1="3" y1="21" x2="10" y2="14"></line>
-    </svg>
-);
-
-// Action Icons
-const CopyIcon = () => (
-    <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-    </svg>
-);
-const TrashIcon = () => (
-    <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polyline points="3 6 5 6 21 6"></polyline>
-        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    </svg>
-);
-const CloseIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-);
-const AddIcon = () => (
-    <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-    </svg>
-);
-
-// Menu Icons
-const ReturnNodeIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polyline points="9 14 4 9 9 4"></polyline>
-        <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
-    </svg>
-);
-const ActionBoltIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-    </svg>
-);
-const ConversationIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-    </svg>
-);
-const MessageIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-);
-const TriggerIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M12 22V8M5 15l7-7 7 7" />
-    </svg>
-);
-const SplitIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M6 3v12a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3M6 3l-3 3m3-3 3 3M18 3l-3 3m3-3 3 3" />
-    </svg>
-);
-const JumpIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-        <path d="M3 3v5h5" />
-    </svg>
-);
-const TransferIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <polyline points="16 3 21 8 16 13"></polyline>
-        <line x1="21" y1="8" x2="3" y2="8"></line>
-        <polyline points="8 21 3 16 8 11"></polyline>
-        <line x1="3" y1="16" x2="21" y2="16"></line>
-    </svg>
-);
-const BookingIcon = () => (
-    <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-    </svg>
-);
-
 // ─── Data ─────────────────────────────────────────────────────────────────────
+
+const MENU_ICON_SIZE = 16;
 
 const FLOW_NODES_MENU = [
     {
         id: "conversation",
         label: "Conversation",
         desc: "Collect info and drive the dialog",
-        icon: <ConversationIcon />,
+        icon: <MessageCircle size={MENU_ICON_SIZE} />,
         bg: "rgba(168, 85, 247, 0.15)",
         color: "#c084fc",
-        emoji: "💬",
     },
     {
         id: "message",
         label: "Message",
         desc: "This is the message node",
-        icon: <MessageIcon />,
+        icon: <MessageSquare size={MENU_ICON_SIZE} />,
         bg: "rgba(168, 85, 247, 0.15)",
         color: "#c084fc",
-        emoji: "✉️",
     },
     {
         id: "trigger",
         label: "Trigger Subflow",
         desc: "Choose to which subflow the conversatio...",
-        icon: <TriggerIcon />,
+        icon: <ArrowUp size={MENU_ICON_SIZE} />,
         bg: "rgba(34, 197, 94, 0.15)",
         color: "#4ade80",
-        emoji: "⚡",
     },
     {
         id: "split",
         label: "Split the Path",
         desc: "Split the path based on conditions",
-        icon: <SplitIcon />,
+        icon: <Split size={MENU_ICON_SIZE} />,
         bg: "rgba(168, 85, 247, 0.15)",
         color: "#c084fc",
-        emoji: "🔀",
     },
     {
         id: "jump",
         label: "Jump",
         desc: "This is the jump node",
-        icon: <JumpIcon />,
+        icon: <Shuffle size={MENU_ICON_SIZE} />,
         bg: "rgba(56, 189, 248, 0.15)",
         color: "#38bdf8",
-        emoji: "⤵️",
     },
     {
         id: "end",
         label: "End",
         desc: "This is the end node",
-        icon: <EndCallIcon />,
+        icon: <PhoneOff size={MENU_ICON_SIZE} />,
         bg: "rgba(239, 68, 68, 0.1)",
         color: "#ef4444",
-        emoji: "🛑",
     },
     {
         id: "return",
         label: "Return to Main Flow",
         desc: "This is the return to main flow node",
-        icon: <ReturnNodeIcon />,
+        icon: <CornerUpLeft size={MENU_ICON_SIZE} />,
         bg: "rgba(56, 189, 248, 0.1)",
         color: "#38bdf8",
-        emoji: "↩️",
     },
 ];
 
@@ -766,57 +417,52 @@ const ACTION_NODES_MENU = [
         id: "action",
         label: "Action",
         desc: "This is the action node",
-        icon: <ActionBoltIcon />,
+        icon: <Zap size={MENU_ICON_SIZE} />,
         bg: "rgba(59, 130, 246, 0.1)",
         color: "#3b82f6",
-        emoji: "⚡",
     },
     {
         id: "sms",
         label: "Send During-Call SMS",
         desc: "Send an SMS during a live call",
-        icon: <MessageIcon />,
+        icon: <MessageSquare size={MENU_ICON_SIZE} />,
         bg: "rgba(34, 197, 94, 0.1)",
         color: "#22c55e",
-        emoji: "💬",
     },
     {
         id: "whatsapp",
         label: "Send During-Call WhatsApp",
         desc: "Send a WhatsApp message during a live call",
-        icon: <ConversationIcon />,
+        icon: <MessageCircle size={MENU_ICON_SIZE} />,
         bg: "rgba(34, 197, 94, 0.1)",
         color: "#22c55e",
-        emoji: "📱",
     },
     {
         id: "transfer",
         label: "Transfer",
         desc: "Transfer the call to a human agent",
-        icon: <TransferIcon />,
+        icon: <ArrowLeftRight size={MENU_ICON_SIZE} />,
         bg: "rgba(234, 179, 8, 0.1)",
         color: "#eab308",
-        emoji: "🔁",
     },
     {
         id: "booking",
         label: "Booking",
         desc: "Book an appointment",
-        icon: <BookingIcon />,
+        icon: <Calendar size={MENU_ICON_SIZE} />,
         bg: "rgba(249, 115, 22, 0.1)",
         color: "#f97316",
-        emoji: "📅",
     },
 ];
 
 const SETTINGS = [
-    { id: "general", label: "General", icon: <SettingsIcon /> },
-    { id: "voice", label: "Voice", icon: <VoiceIcon /> },
-    { id: "call", label: "Call Configuration", icon: <PhoneIcon /> },
-    { id: "end", label: "End-Call Reasons", icon: <EndCallIcon /> },
-    { id: "knowledge", label: "Knowledge & Memory", icon: <KnowledgeIcon /> },
-    { id: "security", label: "Security & Compliance", icon: <ShieldIcon /> },
-    { id: "additional", label: "Additional Settings", icon: <SlidersIcon /> },
+    { id: "general", label: "General", icon: <Settings size={15} strokeWidth={1.8} /> },
+    { id: "voice", label: "Voice", icon: <Activity size={15} strokeWidth={1.8} /> },
+    { id: "call", label: "Call Configuration", icon: <Phone size={15} strokeWidth={1.8} /> },
+    { id: "end", label: "End-Call Reasons", icon: <PhoneOff size={15} strokeWidth={1.8} /> },
+    { id: "knowledge", label: "Knowledge & Memory", icon: <BookOpen size={15} strokeWidth={1.8} /> },
+    { id: "security", label: "Security & Compliance", icon: <Shield size={15} strokeWidth={1.8} /> },
+    { id: "additional", label: "Additional Settings", icon: <SlidersVertical size={15} strokeWidth={1.8} /> },
 ];
 
 const SUBS = {
@@ -1032,7 +678,7 @@ function SplitAnchorNode({ id }: any) {
                     onClick={onDelete}
                     title="Delete Split"
                 >
-                    <TrashIcon />
+                    <Trash2 size={14} strokeWidth={2} />
                 </button>
             </div>
 
@@ -1217,14 +863,14 @@ function ConditionNode({ id, data, selected }: any) {
                     title="Add Condition"
                     style={{ color: "#3b82f6" }}
                 >
-                    <AddIcon />
+                    <Plus size={14} strokeWidth={2.5} />
                 </button>
                 <button
                     className="wf-node-action-btn delete"
                     onClick={onDeleteCondition}
                     title="Delete Condition"
                 >
-                    <TrashIcon />
+                    <Trash2 size={14} strokeWidth={2} />
                 </button>
             </div>
 
@@ -1360,14 +1006,14 @@ function ActionNode({ id, data, selected }: any) {
                 onClick={onCopy}
                 title="Duplicate Node"
             >
-                <CopyIcon />
+                <Copy size={14} strokeWidth={2} />
             </button>
             <button
                 className="wf-node-action-btn delete"
                 onClick={onDelete}
                 title="Delete Node"
             >
-                <TrashIcon />
+                <Trash2 size={14} strokeWidth={2} />
             </button>
         </div>
     );
@@ -1432,7 +1078,7 @@ const AddBtnNode = () => {
                 position={Position.Top}
                 style={{ opacity: 0 }}
             />
-            <AddIcon />
+            <Plus size={14} strokeWidth={2.5} />
         </div>
     );
 };
@@ -1725,6 +1371,7 @@ function FlowPageContent() {
                 target: anchorId,
                 type: "baseStraight",
                 style: { stroke: "#2e3450", strokeWidth: 2 },
+                animated: false,
             });
             nextEdges.push({
                 id: `e${anchorId}-${cond1Id}`,
@@ -1732,6 +1379,7 @@ function FlowPageContent() {
                 target: cond1Id,
                 type: "stepButtonEdge",
                 style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                animated: false,
             });
             nextEdges.push({
                 id: `e${anchorId}-${cond2Id}`,
@@ -1739,6 +1387,7 @@ function FlowPageContent() {
                 target: cond2Id,
                 type: "stepButtonEdge",
                 style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                animated: false,
             });
 
             if (popover?.insertEdgeId && edgeToReplace) {
@@ -1748,6 +1397,7 @@ function FlowPageContent() {
                     target: edgeToReplace.target,
                     type: "buttonEdge",
                     style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                    animated: false,
                 });
             } else {
                 nextEdges.push({
@@ -1756,6 +1406,7 @@ function FlowPageContent() {
                     target: add1Id,
                     type: "buttonEdge",
                     style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                    animated: false,
                 });
             }
             nextEdges.push({
@@ -1764,6 +1415,7 @@ function FlowPageContent() {
                 target: add2Id,
                 type: "buttonEdge",
                 style: { stroke: "#e2e8f0", strokeWidth: 2 },
+                animated: false,
             });
 
             setNodes((nds) => {
@@ -1789,7 +1441,7 @@ function FlowPageContent() {
                     });
                 }
 
-                let insertNodes = [anchorNode, cond1Node, cond2Node, add2Node];
+                const insertNodes = [anchorNode, cond1Node, cond2Node, add2Node];
                 if (!popover?.insertEdgeId) {
                     insertNodes.push(add1Node);
                 }
@@ -1863,6 +1515,7 @@ function FlowPageContent() {
                     target: newNodeId,
                     type: "buttonEdge",
                     style: { stroke: "#2e3450", strokeWidth: 2 },
+                    animated: false,
                 });
                 next.push({
                     id: `e${newNodeId}-${edge.target}`,
@@ -1870,14 +1523,14 @@ function FlowPageContent() {
                     target: edge.target,
                     type: "buttonEdge",
                     style: { stroke: "#2e3450", strokeWidth: 2 },
+                    animated: false,
                 });
                 return next;
             });
         } else if (popover?.addBtnId) {
-            const addBtnNode = nodes.find((n) => n.id === popover.addBtnId);
-            const edgeToAddBtn = edges.find(
-                (e) => e.target === popover.addBtnId,
-            );
+            const addBtnId = popover.addBtnId;
+            const addBtnNode = nodes.find((n) => n.id === addBtnId);
+            const edgeToAddBtn = edges.find((e) => e.target === addBtnId);
             const sourceNodeId = edgeToAddBtn ? edgeToAddBtn.source : null;
 
             if (!addBtnNode) return;
@@ -1894,7 +1547,7 @@ function FlowPageContent() {
             setNodes((nds) =>
                 nds
                     .map((n) =>
-                        n.id === popover.addBtnId
+                        n.id === addBtnId
                             ? { ...n, position: newAddBtnPos }
                             : n,
                     )
@@ -1914,13 +1567,15 @@ function FlowPageContent() {
                             target: newNodeId,
                             type: "buttonEdge",
                             style: { stroke: "#2e3450", strokeWidth: 2 },
+                            animated: false,
                         },
                         {
-                            id: `e${newNodeId}-${popover.addBtnId}`,
+                            id: `e${newNodeId}-${addBtnId}`,
                             source: newNodeId,
-                            target: popover.addBtnId,
+                            target: addBtnId,
                             type: "buttonEdge",
                             style: { stroke: "#2e3450", strokeWidth: 2 },
+                            animated: false,
                         },
                     ];
                 });
@@ -2057,22 +1712,14 @@ function FlowPageContent() {
                 <header className="wf-topbar">
                     <div className="wf-topbar-title">
                         My Inbound Assistant
-                        <Ic
-                            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                            size={12}
-                            stroke="#5a607a"
-                        />
+                        <SquarePen size={12} color="#5a607a" />
                     </div>
                     <span className="wf-topbar-badge">V2</span>
                     <div className="wf-topbar-meta">
                         <span>Inbound</span>
                         <span className="wf-topbar-dot" />
                         <span className="wf-topbar-warn">
-                            <Ic
-                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"
-                                size={12}
-                                stroke="#f59e0b"
-                            />
+                            <TriangleAlert size={12} color="#f59e0b" />
                             No Phone Number
                         </span>
                         <span className="wf-topbar-dot" />
@@ -2090,22 +1737,19 @@ function FlowPageContent() {
                         <div className="wf-topbar-saved-dot" /> Saved 23:35
                     </div>
                     <button className="wf-icon-btn">
-                        <Ic
-                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
-                            size={16}
-                        />
+                        <Home size={16} />
                     </button>
                     <button
                         className="wf-icon-btn"
                         onClick={() => setSelectedNodeId(null)}
                     >
-                        <SettingsIcon />
+                        <Settings size={15} strokeWidth={1.8} />
                     </button>
                     <button
                         onClick={() => TestFlowBtn()}
                         className="wf-btn-test"
                     >
-                        <PlayIcon /> Test Voice Agent
+                        <Play size={13} fill="currentColor" /> Test Voice Agent
                     </button>
                     <button className="wf-btn-deploy">Deploy</button>
                 </header>
@@ -2218,7 +1862,7 @@ function FlowPageContent() {
                                     className="ns-close-btn"
                                     onClick={() => setSelectedNodeId(null)}
                                 >
-                                    <CloseIcon />
+                                    <X size={16} strokeWidth={2} />
                                 </button>
                             </div>
                             <div className="ns-body">
@@ -2280,7 +1924,7 @@ function FlowPageContent() {
                                     Global Settings
                                 </span>
                                 <button className="gs-history-btn">
-                                    <HistoryIcon />
+                                    <History size={14} strokeWidth={1.8} />
                                 </button>
                             </div>
 
@@ -2413,7 +2057,7 @@ function FlowPageContent() {
                                                                             "4px",
                                                                     }}
                                                                 >
-                                                                    <ExpandIcon />
+                                                                    <Maximize2 size={14} strokeWidth={2} />
                                                                 </button>
                                                             </label>
                                                             <textarea

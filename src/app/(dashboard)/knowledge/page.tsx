@@ -1,8 +1,12 @@
-export default function SettingsPage() {
+export default function KnowledgeBasePage() {
     return (
-        <div style={{ padding: "28px" }}>
-            <h1 style={{ color: "#e8eaf6", fontSize: 20 }}>Settings</h1>
-            <p style={{ color: "#8892b0" }}>Manage your account here.</p>
+        <div className="px-7 py-7">
+            <h1 className="text-xl font-bold tracking-tight text-slate-100">
+                Knowledge Base
+            </h1>
+            <p className="mt-1 text-[13px] text-slate-500">
+                Upload documents and FAQs for your agents to draw on.
+            </p>
         </div>
     );
 }
